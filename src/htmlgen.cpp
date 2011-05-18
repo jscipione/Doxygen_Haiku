@@ -1937,20 +1937,6 @@ void HtmlGenerator::writeChar(char c)
   docify(cs);
 }
 
-void HtmlGenerator::startPunctuation()
-{
-  DBG_HTML(t << "<!-- startPunctuation -->" << endl;)
-
-  t << "<span class=\"punctuation\">";
-}
-
-void HtmlGenerator::endPunctuation()
-{
-  t << "</span>" << endl;
-
-  DBG_HTML(t << "<!-- endPunctuation -->" << endl;)
-}
-
 //--- helper function for dynamic sections -------------------------
 
 static void startSectionHeader(FTextStream &t,
@@ -2271,7 +2257,7 @@ void HtmlGenerator::startMemberDoc(const char *,const char *,const char *,const 
  
   t << endl << "<div class=\"memitem\">" << endl;
   t << "<h3 class=\"memitem\">";
-  docify(name,TRUE);
+  docify(name);
   t << "()</h3>" << endl;
   t << "  <div class=\"memproto\">" << endl;
 }
@@ -2328,7 +2314,7 @@ void HtmlGenerator::startMemberDocScopeName()
 
 void HtmlGenerator::endMemberDocScopeName()
 {
-  t << "</span>" << endl;
+  t << "</span>";
 
   DBG_HTML(t << "<!-- endMemberDocScopeName -->" << endl;)
 }
@@ -2345,6 +2331,20 @@ void HtmlGenerator::endMemberDocIdentifier()
   t << "</span>" << endl;
 
   DBG_HTML(t << "<!-- endMemberDocIdentifier -->" << endl;)
+}
+
+void HtmlGenerator::startPunctuation()
+{
+  DBG_HTML(t << "<!-- startPunctuation -->" << endl;)
+
+  t << "<span class=\"punctuation\">";
+}
+
+void HtmlGenerator::endPunctuation()
+{
+  t << "</span>";
+
+  DBG_HTML(t << "<!-- endPunctuation -->" << endl;)
 }
 
 void HtmlGenerator::startParameterList(bool openBracket)
