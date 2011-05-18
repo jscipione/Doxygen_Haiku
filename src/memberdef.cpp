@@ -1896,7 +1896,7 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     {
       // strip scope name
       int ep = ldef.find("::");
-      if (ep!=-1) 
+      if (ep!=-1)
       {
         int sp=ldef.findRev(' ',ep);
         if (sp!=-1)
@@ -1923,6 +1923,32 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
       }
       //printf("end   >%s< i=%d\n",ldef.data(),i);
       if (isStatic()) ldef.prepend("+ "); else ldef.prepend("- ");
+    } else {
+      // get the type
+      int ep = ldef.findRev(' ');
+      if (ep!=-1)
+      {
+        ol.startMemberDocSpecifier();
+        ldef.remove((uint)ep, 1);
+        linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.left(ep));
+        ol.endMemberDocSpecifier();
+        ol.docify(" ");
+        ldef = ldef.remove(0, (uint)ep);
+      }
+      // get the class name
+      if (!Config_getBool("HIDE_SCOPE_NAMES")) {
+        ep = ldef.findRev("::");
+        if (ep!=-1) {
+          ol.startMemberDocScopeName();
+          ldef = ldef.remove((uint)ep, 2);
+          linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.left((uint)ep));
+          ol.endMemberDocScopeName();
+          ol.startPunctuation();
+          ol.docify("::");
+          ol.endPunctuation();
+          ldef.remove(0, (uint)ep);
+        }
+      }
     }
 
     if (optVhdl)
@@ -1931,7 +1957,9 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     }
     else
     {
+      ol.startMemberDocIdentifier();
       linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef);
+      ol.endMemberDocIdentifier();
       hasParameterList=writeDefArgumentList(ol,cd,scopeName,this);
     }
 

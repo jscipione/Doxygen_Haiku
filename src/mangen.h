@@ -216,6 +216,14 @@ class ManGenerator : public OutputGenerator
     void endMemberDocPrefixItem() {}
     void startMemberDocName(bool) {}
     void endMemberDocName() {}
+    void startMemberDocSpecifier() {}
+    void endMemberDocSpecifier() {}
+    void startMemberDocScopeName() {}
+    void endMemberDocScopeName() {}
+    void startPunctuation() {}
+    void endPunctuation() {}
+    void startMemberDocIdentifier() {}
+    void endMemberDocIdentifier() {}
     void startParameterType(bool,const char *) {}
     void endParameterType() {}
     void startParameterName(bool) {}

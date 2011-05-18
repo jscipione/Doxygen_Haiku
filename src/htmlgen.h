@@ -238,6 +238,14 @@ class HtmlGenerator : public OutputGenerator
     void endMemberDocPrefixItem();
     void startMemberDocName(bool);
     void endMemberDocName();
+    void startMemberDocSpecifier();
+    void endMemberDocSpecifier();
+    void startMemberDocScopeName();
+    void endMemberDocScopeName();
+    void startPunctuation();
+    void endPunctuation();
+    void startMemberDocIdentifier();
+    void endMemberDocIdentifier();
     void startParameterType(bool first,const char *key);
     void endParameterType();
     void startParameterName(bool);

@@ -1117,8 +1117,6 @@ void HtmlGenerator::writeSearchData(const char *dir)
   Doxygen::indexList.addStyleSheetFile("search/search.css");
 }
 
-
-
 void HtmlGenerator::writeStyleSheetFile(QFile &file)
 {
   FTextStream t(&file);
@@ -1243,7 +1241,6 @@ static void writeDefaultHeaderFile(FTextStream &t, const char *name,
     }
   }
 }
-
 
 void HtmlGenerator::writeHeaderFile(QFile &file, const char *cssname)
 {
@@ -1490,7 +1487,6 @@ void HtmlGenerator::writeSearchFooter(FTextStream &t,const QCString &relPath)
   t << "</div>\n";
   t << "\n";
 }
-
 
 QCString HtmlGenerator::writeLogoAsString(const char *path)
 {
@@ -2044,7 +2040,6 @@ void HtmlGenerator::endClassDiagram(const ClassDiagram &d,
   m_sectionCount++;
 }
 
-
 void HtmlGenerator::startMemberList()  
 { 
   DBG_HTML(t << "<!-- startMemberList -->" << endl)
@@ -2115,7 +2110,6 @@ void HtmlGenerator::endMemberTemplateParams()
     t << "<tr><td class=\"memTemplItemLeft\" align=\"right\" valign=\"top\">";
   }
 }
-
 
 void HtmlGenerator::insertMemberAlign(bool templ) 
 { 
@@ -2257,12 +2251,15 @@ void HtmlGenerator::endMemberDocList()
   DBG_HTML(t << "<!-- endMemberDocList -->" << endl;)
 }
 
-void HtmlGenerator::startMemberDoc(const char *,const char *,const char *,const char *,bool) 
+void HtmlGenerator::startMemberDoc(const char *,const char *,const char *,const char *name,bool) 
 { 
   DBG_HTML(t << "<!-- startMemberDoc -->" << endl;)
  
-  t << "\n<div class=\"memitem\">" << endl;
-  t << "<div class=\"memproto\">" << endl;
+  t << endl << "<div class=\"memitem\">" << endl;
+  t << "<h3 class=\"memitem\">";
+  docify(name,TRUE);
+  t << "()</h3>" << endl;
+  t << "  <div class=\"memproto\">" << endl;
 }
 
 void HtmlGenerator::startMemberDocPrefixItem()
@@ -2281,23 +2278,71 @@ void HtmlGenerator::startMemberDocName(bool /*align*/)
 {
   DBG_HTML(t << "<!-- startMemberDocName -->" << endl;)
 
-  t << "      <table class=\"memname\">" << endl;
+  t << "    <table class=\"memname\">" << endl;
     
-  t << "        <tr>" << endl;
-  t << "          <td class=\"memname\">";
+  t << "      <tr>" << endl;
+  t << "        <td class=\"memname\">" << endl;
 }
 
 void HtmlGenerator::endMemberDocName()
 {
   DBG_HTML(t << "<!-- endMemberDocName -->" << endl;)
-  t << "</td>" << endl;
+
+  t << endl << "        </td>" << endl;
+}
+
+void HtmlGenerator::startMemberDocSpecifier()
+{
+  DBG_HTML(t << "<!-- startMemberDocSpecifier -->" << endl;)
+
+  t << "<span class=\"memspecifier\">";
+}
+
+void HtmlGenerator::endMemberDocSpecifier()
+{
+  t << "</span>" << endl;
+
+  DBG_HTML(t << "<!-- endMemberDocSpecifier -->" << endl;)
+}
+
+void HtmlGenerator::startMemberDocScopeName()
+{
+  DBG_HTML(t << endl << "<!-- startMemberDocScopeName -->" << endl;)
+
+  t << "          <span class=\"memscope\">";
+}
+
+void HtmlGenerator::endMemberDocScopeName()
+{
+  t << "</span>" << endl;
+
+  DBG_HTML(t << "<!-- endMemberDocScopeName -->" << endl;)
+}
+
+void HtmlGenerator::startMemberDocIdentifier()
+{
+  DBG_HTML(t << "<!-- startMemberDocIdentifier -->" << endl;)
+
+  t << "<span class=\"memident\">";
+}
+
+void HtmlGenerator::endMemberDocIdentifier()
+{
+  t << "</span>" << endl;
+
+  DBG_HTML(t << "<!-- endMemberDocIdentifier -->" << endl;)
 }
 
 void HtmlGenerator::startParameterList(bool openBracket)
 {
   DBG_HTML(t << "<!-- startParameterList -->" << endl;)
-  t << "          <td>";
-  if (openBracket) t << "(";
+  t << "        <td>";
+  if (openBracket)
+  {
+    startPunctuation();
+    t << "(";
+    endPunctuation();
+  }
   t << "</td>" << endl;
 }
 
@@ -2306,17 +2351,17 @@ void HtmlGenerator::startParameterType(bool first,const char *key)
   if (first)
   {
     DBG_HTML(t << "<!-- startFirstParameterType -->" << endl;)
-    t << "          <td class=\"paramtype\">";
+    t << "        <td class=\"paramtype\">";
   }
   else
   {
     DBG_HTML(t << "<!-- startParameterType -->" << endl;)
-    t << "        <tr>" << endl;
-    t << "          <td class=\"paramkey\">";
+    t << "      <tr>" << endl;
+    t << "        <td class=\"paramkey\">";
     if (key) t << key;
     t << "</td>" << endl;
-    t << "          <td></td>" << endl;
-    t << "          <td class=\"paramtype\">";
+    t << "        <td></td>" << endl;
+    t << "        <td class=\"paramtype\">";
   }
 }
 
@@ -2329,7 +2374,7 @@ void HtmlGenerator::endParameterType()
 void HtmlGenerator::startParameterName(bool /*oneArgOnly*/)
 {
   DBG_HTML(t << "<!-- startParameterName -->" << endl;)
-  t << "          <td class=\"paramname\">";
+  t << "        <td class=\"paramname\">";
 }
 
 void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeBracket)
@@ -2339,26 +2384,38 @@ void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeBracket)
   {
     if (emptyList)
     {
-      if (closeBracket) t << "</td><td>)";
+      if (closeBracket)
+      {
+        t << "</td><td>";
+        startPunctuation();
+        t << ")";
+        endPunctuation();
+      }
       t << "</td>" << endl;
-      t << "          <td>";
+      t << "        <td>";
     }
     else
     {
       t << "&#160;</td>" << endl;
-      t << "        </tr>" << endl;
-      t << "        <tr>" << endl;
-      t << "          <td></td>" << endl;
-      t << "          <td>";
-      if (closeBracket) t << ")";
+      t << "      </tr>" << endl;
+      t << "      <tr>" << endl;
+      t << "        <td></td>" << endl;
+      t << "        <td>";
+      if (closeBracket)
+      {
+        startPunctuation();
+        t << ")";
+        endPunctuation();
+      }
       t << "</td>" << endl;
-      t << "          <td></td><td>";
+      t << "        <td></td>" << endl;
+      t << "        <td>";
     }
   }
   else
   {
     t << "</td>" << endl;
-    t << "        </tr>" << endl;
+    t << "      </tr>" << endl;
   }
 }
 
@@ -2366,18 +2423,15 @@ void HtmlGenerator::endParameterList()
 {
   DBG_HTML(t << "<!-- endParameterList -->" << endl;)
   t << "</td>" << endl;
-  t << "        </tr>" << endl;
+  t << "      </tr>" << endl;
 }
 
 void HtmlGenerator::endMemberDoc(bool hasArgs)     
 { 
   DBG_HTML(t << "<!-- endMemberDoc -->" << endl;)
-  if (!hasArgs)
-  {
-    t << "        </tr>" << endl;
-  }
-  t << "      </table>" << endl;
-  t << "</div>" << endl;
+  if (!hasArgs) t << "      </tr>" << endl;
+  t << "    </table>" << endl;
+  t << "  </div>" << endl;
 }
 
 void HtmlGenerator::startDotGraph()

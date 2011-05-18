@@ -246,6 +246,10 @@ class OutputList : public OutputDocInterface
     { forall(&OutputGenerator::endEmphasis); }
     void writeChar(char c)
     { forall(&OutputGenerator::writeChar,c); }
+    void startPunctuation()
+    { forall(&OutputGenerator::startPunctuation); }
+    void endPunctuation()
+    { forall(&OutputGenerator::endPunctuation); }
     void startMemberDoc(const char *clName,const char *memName,
                         const char *anchor,const char *title,bool showInline)
     { forall(&OutputGenerator::startMemberDoc,clName,memName,anchor,title,showInline); }
@@ -396,6 +400,18 @@ class OutputList : public OutputDocInterface
     { forall(&OutputGenerator::startMemberDocName,align); }
     void endMemberDocName()
     { forall(&OutputGenerator::endMemberDocName); }
+    void startMemberDocSpecifier()
+    { forall(&OutputGenerator::startMemberDocSpecifier); }
+    void endMemberDocSpecifier()
+    { forall(&OutputGenerator::endMemberDocSpecifier); }
+    void startMemberDocScopeName()
+    { forall(&OutputGenerator::startMemberDocScopeName); }
+    void endMemberDocScopeName()
+    { forall(&OutputGenerator::endMemberDocScopeName); }
+    void startMemberDocIdentifier()
+    { forall(&OutputGenerator::startMemberDocIdentifier); }
+    void endMemberDocIdentifier()
+    { forall(&OutputGenerator::endMemberDocIdentifier); }
     void startParameterType(bool first,const char *key)
     { forall(&OutputGenerator::startParameterType,first,key); }
     void endParameterType()
