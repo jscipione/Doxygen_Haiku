@@ -1937,6 +1937,20 @@ void HtmlGenerator::writeChar(char c)
   docify(cs);
 }
 
+void HtmlGenerator::startPunctuation()
+{
+  DBG_HTML(t << "<!-- startPunctuation -->" << endl;)
+
+  t << "<span class=\"punctuation\">";
+}
+
+void HtmlGenerator::endPunctuation()
+{
+  t << "</span>" << endl;
+
+  DBG_HTML(t << "<!-- endPunctuation -->" << endl;)
+}
+
 //--- helper function for dynamic sections -------------------------
 
 static void startSectionHeader(FTextStream &t,
