@@ -2347,11 +2347,11 @@ void HtmlGenerator::endPunctuation()
   DBG_HTML(t << "<!-- endPunctuation -->" << endl;)
 }
 
-void HtmlGenerator::startParameterList(bool openBracket)
+void HtmlGenerator::startParameterList(bool openParen)
 {
   DBG_HTML(t << "<!-- startParameterList -->" << endl;)
   t << "        <td>";
-  if (openBracket)
+  if (openParen)
   {
     startPunctuation();
     t << "(";
@@ -2391,14 +2391,14 @@ void HtmlGenerator::startParameterName(bool /*oneArgOnly*/)
   t << "        <td class=\"paramname\">";
 }
 
-void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeBracket)
+void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeParen)
 {
   DBG_HTML(t << "<!-- endParameterName -->" << endl;)
   if (last)
   {
     if (emptyList)
     {
-      if (closeBracket)
+      if (closeParen)
       {
         t << "</td><td>";
         startPunctuation();
@@ -2415,7 +2415,7 @@ void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeBracket)
       t << "      <tr>" << endl;
       t << "        <td></td>" << endl;
       t << "        <td>";
-      if (closeBracket)
+      if (closeParen)
       {
         startPunctuation();
         t << ")";

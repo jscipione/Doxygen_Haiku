@@ -1917,14 +1917,16 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
       while (i>=0 && isspace((uchar)ldef.at(i))) i--;
       if (i>0)
       {
-        // insert braches around the type
+        // insert parens around the type
         QCString tmp("("+ldef.left(i+1)+")"+ldef.mid(i+1));
         ldef=tmp;
       }
       //printf("end   >%s< i=%d\n",ldef.data(),i);
       if (isStatic()) ldef.prepend("+ "); else ldef.prepend("- ");
-    } else {
-      // get the type
+    }
+    else
+    {
+      // Put a span around the type specifier or return value
       int ep = ldef.findRev(' ');
       if (ep!=-1)
       {
@@ -1933,10 +1935,10 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
         linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.left(ep));
         ol.endMemberDocSpecifier();
         ol.docify(" ");
-        ldef = ldef.remove(0, (uint)ep);
+        ldef.remove(0, (uint)ep);
       }
-      // get the class name
       if (!Config_getBool("HIDE_SCOPE_NAMES")) {
+        // Put a span around the class or namespace name and :: operator
         ep = ldef.findRev("::");
         if (ep!=-1) {
           ol.startMemberDocScopeName();
