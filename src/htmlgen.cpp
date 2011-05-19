@@ -2251,14 +2251,14 @@ void HtmlGenerator::endMemberDocList()
   DBG_HTML(t << "<!-- endMemberDocList -->" << endl;)
 }
 
-void HtmlGenerator::startMemberDoc(const char *,const char *,const char *,const char *name,bool) 
-{ 
+void HtmlGenerator::startMemberDoc(const char *,const char *name,const char *,const char *,bool) 
+{
   DBG_HTML(t << "<!-- startMemberDoc -->" << endl;)
- 
+
   t << endl << "<div class=\"memitem\">" << endl;
   t << "<h3 class=\"memitem\">";
   docify(name);
-  t << "()</h3>" << endl;
+  t << "</h3>" << endl;
   t << "  <div class=\"memproto\">" << endl;
 }
 

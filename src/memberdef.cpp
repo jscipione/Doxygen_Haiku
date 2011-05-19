@@ -1838,8 +1838,11 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
   }
   else // not an enum value
   {
+    QCString fname=name().copy();
+    if (isFunction()) fname.append("()");
+
     ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
-    ol.startMemberDoc(ciname,name(),memAnchor,name(),showInline);
+    ol.startMemberDoc(ciname,fname,memAnchor,name(),showInline);
 
     ClassDef *cd=getClassDef();
     if (!Config_getBool("HIDE_SCOPE_NAMES"))
