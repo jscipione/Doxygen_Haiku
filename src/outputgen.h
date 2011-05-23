@@ -399,10 +399,14 @@ class OutputGenerator : public BaseOutputDocInterface
     virtual void endMemberDocSpecifier() = 0;
     virtual void startMemberDocScopeName() = 0;
     virtual void endMemberDocScopeName() = 0;
-    virtual void startPunctuation() = 0;
-    virtual void endPunctuation() = 0;
     virtual void startMemberDocIdentifier() = 0;
     virtual void endMemberDocIdentifier() = 0;
+    virtual void startMemberDocPunctuation() = 0;
+    virtual void endMemberDocPunctuation() = 0;
+    virtual void startMemberDocDefaultValue() = 0;
+    virtual void endMemberDocDefaultValue() = 0;
+    virtual void startMemberDocQualifier() = 0;
+    virtual void endMemberDocQualifier() = 0;
     virtual void startParameterType(bool,const char *) = 0;
     virtual void endParameterType() = 0;
     virtual void startParameterName(bool) = 0;

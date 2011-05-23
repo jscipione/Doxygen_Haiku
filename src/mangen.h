@@ -220,10 +220,14 @@ class ManGenerator : public OutputGenerator
     void endMemberDocSpecifier() {}
     void startMemberDocScopeName() {}
     void endMemberDocScopeName() {}
-    void startPunctuation() {}
-    void endPunctuation() {}
     void startMemberDocIdentifier() {}
     void endMemberDocIdentifier() {}
+    void startMemberDocPunctuation() {}
+    void endMemberDocPunctuation() {}
+    void startMemberDocDefaultValue() {}
+    void endMemberDocDefaultValue() {}
+    void startMemberDocQualifier() {}
+    void endMemberDocQualifier() {}
     void startParameterType(bool,const char *) {}
     void endParameterType() {}
     void startParameterName(bool) {}

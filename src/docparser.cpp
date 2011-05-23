@@ -351,10 +351,10 @@ static void checkArgumentName(const QCString &name,bool isParam)
       if (argName.right(3)=="...") argName=argName.left(argName.length()-3);
       if (aName==argName) 
       {
-	//printf("adding `%s'\n",aName.data());
-	g_paramsFound.insert(aName,(void *)(0x8));
-	found=TRUE;
-	break;
+        //printf("adding `%s'\n",aName.data());
+        g_paramsFound.insert(aName,(void *)(0x8));
+        found=TRUE;
+        break;
       }
     }
     if (!found && isParam)
@@ -377,17 +377,17 @@ static void checkArgumentName(const QCString &name,bool isParam)
       }
       QCString alStr = argListToString(al.pointer());
       warn_doc_error(docFile,docLine,
-	  "warning: argument '%s' of command @param "
-	  "is not found in the argument list of %s%s%s%s",
-	  qPrint(aName), qPrint(scope), qPrint(g_memberDef->name()),
-	  qPrint(alStr), qPrint(inheritedFrom));
+        "warning: argument '%s' of command @param "
+        "is not found in the argument list of %s%s%s%s",
+        qPrint(aName), qPrint(scope), qPrint(g_memberDef->name()),
+        qPrint(alStr), qPrint(inheritedFrom));
     }
     p=i+l;
   }
 }
 
 /*! Checks if the parameters that have been specified using \@param are
- *  indeed all paramters.
+ *  indeed all parameters.
  *  Must be called after checkArgumentName() has been called for each
  *  argument.
  */
