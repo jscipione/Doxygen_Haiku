@@ -2316,12 +2316,26 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
           Doxygen::indexList.addIndexItem(container,fmd);
 
           //ol.writeListItem();
-          ol.startDescTableTitle(); // this enables emphasis!
+          ol.startDescTableTitle(); // this enables emphasis... not anymore!
           ol.startDoxyAnchor(cfname,cname,fmd->anchor(),fmd->name(),fmd->argsString());
           first=FALSE;
-          //ol.startEmphasis();
+          if (isFunction())
+          {
+            ol.startEmphasis();
+          }
+          else
+          {
+            ol.startTypewriter();
+          }
           ol.docify(fmd->name());
-          //ol.endEmphasis();
+          if (isFunction())
+          {
+            ol.endEmphasis();
+          }
+          else
+          {
+            ol.endTypewriter();
+          }
           ol.disableAllBut(OutputGenerator::Man);
           ol.writeString(" ");
           ol.enableAll();
