@@ -2251,7 +2251,7 @@ void HtmlGenerator::endMemberDocList()
   DBG_HTML(t << "<!-- endMemberDocList -->" << endl;)
 }
 
-void HtmlGenerator::startMemberDoc(const char *,const char *,const char *,const char *name,bool) 
+void HtmlGenerator::startMemberDoc(const char *,const char *name,const char *,const char *,bool) 
 {
   DBG_HTML(t << "<!-- startMemberDoc -->" << endl;)
 
