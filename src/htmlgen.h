@@ -42,7 +42,7 @@ class HtmlGenerator : public OutputGenerator
     static void writeSearchPage();
     static QCString writeLogoAsString(const char *path);
     static QCString writeSplitBarAsString(const char *name,const char *relpath);
-   
+
     void enable() 
     { if (genStack->top()) active=*genStack->top(); else active=TRUE; }
     void disable() { active=FALSE; }
@@ -242,10 +242,14 @@ class HtmlGenerator : public OutputGenerator
     void endMemberDocSpecifier();
     void startMemberDocScopeName();
     void endMemberDocScopeName();
-    void startPunctuation();
-    void endPunctuation();
     void startMemberDocIdentifier();
     void endMemberDocIdentifier();
+    void startMemberDocPunctuation();
+    void endMemberDocPunctuation();
+    void startMemberDocDefaultValue();
+    void endMemberDocDefaultValue();
+    void startMemberDocQualifier();
+    void endMemberDocQualifier();
     void startParameterType(bool first,const char *key);
     void endParameterType();
     void startParameterName(bool);

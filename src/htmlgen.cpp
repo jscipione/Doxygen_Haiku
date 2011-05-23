@@ -2295,7 +2295,7 @@ void HtmlGenerator::startMemberDocSpecifier()
 {
   DBG_HTML(t << "<!-- startMemberDocSpecifier -->" << endl;)
 
-  t << "<span class=\"memspecifier\">";
+  t << "<span class=\"specifier\">";
 }
 
 void HtmlGenerator::endMemberDocSpecifier()
@@ -2309,7 +2309,7 @@ void HtmlGenerator::startMemberDocScopeName()
 {
   DBG_HTML(t << endl << "<!-- startMemberDocScopeName -->" << endl;)
 
-  t << "          <span class=\"memscope\">";
+  t << "          <span class=\"scopename\">";
 }
 
 void HtmlGenerator::endMemberDocScopeName()
@@ -2323,7 +2323,7 @@ void HtmlGenerator::startMemberDocIdentifier()
 {
   DBG_HTML(t << "<!-- startMemberDocIdentifier -->" << endl;)
 
-  t << "<span class=\"memident\">";
+  t << "<span class=\"identifier\">";
 }
 
 void HtmlGenerator::endMemberDocIdentifier()
@@ -2333,18 +2333,46 @@ void HtmlGenerator::endMemberDocIdentifier()
   DBG_HTML(t << "<!-- endMemberDocIdentifier -->" << endl;)
 }
 
-void HtmlGenerator::startPunctuation()
+void HtmlGenerator::startMemberDocPunctuation()
 {
-  DBG_HTML(t << "<!-- startPunctuation -->" << endl;)
+  DBG_HTML(t << "<!-- startMemberDocPunctuation -->" << endl;)
 
   t << "<span class=\"punctuation\">";
 }
 
-void HtmlGenerator::endPunctuation()
+void HtmlGenerator::endMemberDocPunctuation()
 {
   t << "</span>";
 
-  DBG_HTML(t << "<!-- endPunctuation -->" << endl;)
+  DBG_HTML(t << "<!-- endMemberDocPunctuation -->" << endl;)
+}
+
+void HtmlGenerator::startMemberDocDefaultValue()
+{
+  DBG_HTML(t << "<!-- startMemberDocDefaultValue -->" << endl;)
+
+  t << "<span class=\"default-value\">";
+}
+
+void HtmlGenerator::endMemberDocDefaultValue()
+{
+  t << "</span>";
+
+  DBG_HTML(t << "<!-- endMemberDocDefaultValue -->" << endl;)
+}
+
+void HtmlGenerator::startMemberDocQualifier()
+{
+  DBG_HTML(t << "<!-- startMemberDocQualifier -->" << endl;)
+
+  t << "<span class=\"qualifier\">";
+}
+
+void HtmlGenerator::endMemberDocQualifier()
+{
+  t << "</span>";
+
+  DBG_HTML(t << "<!-- endMemberDocQualifier -->" << endl;)
 }
 
 void HtmlGenerator::startParameterList(bool openParen)
@@ -2353,9 +2381,9 @@ void HtmlGenerator::startParameterList(bool openParen)
   t << "        <td>";
   if (openParen)
   {
-    startPunctuation();
+    startMemberDocPunctuation();
     t << "(";
-    endPunctuation();
+    endMemberDocPunctuation();
   }
   t << "</td>" << endl;
 }
@@ -2401,9 +2429,9 @@ void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeParen)
       if (closeParen)
       {
         t << "</td><td>";
-        startPunctuation();
+        startMemberDocPunctuation();
         t << ")";
-        endPunctuation();
+        endMemberDocPunctuation();
       }
       t << "</td>" << endl;
       t << "        <td>";
@@ -2417,9 +2445,9 @@ void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeParen)
       t << "        <td>";
       if (closeParen)
       {
-        startPunctuation();
+        startMemberDocPunctuation();
         t << ")";
-        endPunctuation();
+        endMemberDocPunctuation();
       }
       t << "</td>" << endl;
       t << "        <td></td>" << endl;
