@@ -2449,7 +2449,7 @@ void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeParen)
         t << ")";
         endMemberDocPunctuation();
         t << "</td>" << endl;
-        t << "        <td>";
+        t << "        <td colspan=\"2\">";
       }
       else
       {
