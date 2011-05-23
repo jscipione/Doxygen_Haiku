@@ -319,13 +319,15 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
   if (defArgList->constSpecifier)
   {
     ol.startMemberDocQualifier();
-    ol.docify(" const");
+    ol.writeNonBreakableSpace(1);
+    ol.docify("const");
     ol.endMemberDocQualifier();
   }
   if (defArgList->volatileSpecifier)
   {
     ol.startMemberDocQualifier();
-    ol.docify(" volatile");
+    ol.writeNonBreakableSpace(1);
+    ol.docify("volatile");
     ol.endMemberDocQualifier();
   }
   return TRUE;
@@ -736,19 +738,19 @@ void MemberDef::insertReimplementedBy(MemberDef *md)
     m_impl->templateMaster->insertReimplementedBy(md);
   }
   if (m_impl->redefinedBy==0) m_impl->redefinedBy = new MemberList(MemberList::redefinedBy);
-  if (m_impl->redefinedBy->findRef(md)==-1) 
+  if (m_impl->redefinedBy->findRef(md)==-1)
   {
     m_impl->redefinedBy->inSort(md);
   }
 }
 
-MemberDef *MemberDef::reimplements() const      
+MemberDef *MemberDef::reimplements() const
 {
   makeResident();
   return m_impl->redefines; 
 }
 
-LockingPtr<MemberList> MemberDef::reimplementedBy() const   
+LockingPtr<MemberList> MemberDef::reimplementedBy() const
 {
   makeResident();
   return LockingPtr<MemberList>(this,m_impl->redefinedBy); 
@@ -1597,7 +1599,8 @@ void MemberDef::writeDeclaration(OutputList &ol,
   {
     ol.startTypewriter();
     ol.startMemberDocQualifier();
-    ol.docify(" [implementation]");
+    ol.writeNonBreakableSpace(1);
+    ol.docify("[implementation]");
     ol.endMemberDocQualifier();
     ol.endTypewriter();
   }
@@ -1606,7 +1609,8 @@ void MemberDef::writeDeclaration(OutputList &ol,
   {
       ol.writeLatexSpacing();
       ol.startTypewriter();
-      ol.docify(" [");
+      ol.writeNonBreakableSpace(1);
+      ol.docify("[");
       QStrList sl;
       if (isGettable())  sl.append("get");
       if (isSettable())  sl.append("set");
@@ -1626,7 +1630,8 @@ void MemberDef::writeDeclaration(OutputList &ol,
       ol.writeLatexSpacing();
       ol.startTypewriter();
       ol.startMemberDocPunctuation();
-      ol.docify(" [");
+      ol.writeNonBreakableSpace(1);
+      ol.docify("[");
       ol.endMemberDocPunctuation();
       QStrList sl;
       if (isAddable())   sl.append("add");
@@ -1922,7 +1927,7 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
         {
           if (tal->count()>0)
           {
-            if (!first) ol.docify(" ");
+            if (!first) ol.writeNonBreakableSpace(1);
             ol.startMemberDocPrefixItem();
             writeTemplatePrefix(ol,tal);
             ol.endMemberDocPrefixItem();
@@ -1943,7 +1948,7 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
           {
             if (tal->count()>0)
             {
-              if (!first) ol.docify(" ");
+              if (!first) ol.writeNonBreakableSpace(1);
               ol.startMemberDocPrefixItem();
               writeTemplatePrefix(ol,tal);
               ol.endMemberDocPrefixItem();
@@ -2072,7 +2077,8 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     ol.writeLatexSpacing();
     ol.startTypewriter();
     ol.startMemberDocPunctuation();
-    ol.docify(" [");
+    ol.writeNonBreakableSpace(1);
+    ol.docify("[");
     ol.endMemberDocPunctuation();
     QStrList sl;
     if (optVhdl)
@@ -2153,7 +2159,8 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     ol.writeLatexSpacing();
     ol.startTypewriter();
     ol.startMemberDocQualifier();
-    ol.docify(" [implementation]");
+    ol.writeNonBreakableSpace(1);
+    ol.docify("[implementation]");
     ol.endMemberDocQualifier();
     ol.endTypewriter();
   }
