@@ -2448,10 +2448,15 @@ void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeParen)
         startMemberDocPunctuation();
         t << ")";
         endMemberDocPunctuation();
+        t << "</td>" << endl;
+        t << "        <td>";
       }
-      t << "</td>" << endl;
-      t << "        <td></td>" << endl;
-      t << "        <td>";
+      else
+      {
+        t << "</td>" << endl;
+        t << "        <td></td>" << endl;
+        t << "        <td>";
+      }
     }
   }
   else

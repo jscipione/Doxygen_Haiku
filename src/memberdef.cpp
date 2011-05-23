@@ -313,6 +313,7 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
   if (md->extraTypeChars())
   {
     ol.startMemberDocQualifier();
+    ol.writeNonBreakableSpace(1);
     ol.docify(md->extraTypeChars());
     ol.endMemberDocQualifier();
   }
