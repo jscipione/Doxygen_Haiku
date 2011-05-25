@@ -3378,15 +3378,23 @@ static bool matchArgument2(
   QCString dstType  = dstA->type;
   stripIrrelevantConstVolatile(srcType);
   stripIrrelevantConstVolatile(dstType);
+  bool srcElaboratedTypeSpecifier = srcType.left(5)=="class"  ||
+                                    srcType.left(6)=="struct" ||
+                                    srcType.left(5)=="union"  ||
+                                    srcType.left(4)=="enum";
+  bool dstElaboratedTypeSpecifier = dstType.left(5)=="class"  ||
+                                    dstType.left(6)=="struct" ||
+                                    dstType.left(5)=="union"  ||
+                                    dstType.left(4)=="enum";
   //printf("'%s'<->'%s'\n",sSrcName.data(),dstType.right(sSrcName.length()).data());
   //printf("'%s'<->'%s'\n",sDstName.data(),srcType.right(sDstName.length()).data());
-  if (sSrcName==dstType.right(sSrcName.length()))
+  if (!dstElaboratedTypeSpecifier && sSrcName==dstType.right(sSrcName.length()))
   { // case "unsigned int" <-> "unsigned int i"
     srcA->type+=sSrcName;
     srcA->name="";
     srcA->canType=""; // invalidate cached type value
   }
-  else if (sDstName==srcType.right(sDstName.length()))
+  else if (!srcElaboratedTypeSpecifier && sDstName==srcType.right(sDstName.length()))
   { // case "unsigned int i" <-> "unsigned int"
     dstA->type+=sDstName;
     dstA->name="";

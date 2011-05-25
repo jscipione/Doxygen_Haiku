@@ -184,25 +184,6 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
       if (md->isObjCMethod()) { n.prepend("("); n.append(")"); }
       if (a->type!="...")
       {
-        if (a->name.isEmpty())
-        {
-          int sp = a->type.find(' ');
-          int mp = a->type.find(' ', sp+1);
-          if (sp!=-1 && mp!=-1 && mp>sp &&
-              (
-                a->type.left((uint)sp) == "enum" ||
-                a->type.left((uint)sp) == "struct" ||
-                a->type.left((uint)sp) == "union" ||
-                a->type.left((uint)sp) == "class"
-              )
-            )
-            // parameter type has an elaborated type specifier.
-          {
-            a->name = a->type.mid((uint)mp+1);
-            n = a->type = a->type.left((uint)mp);
-            if (md->isObjCMethod()) { n.prepend("("); n.append(")"); }
-          }
-        }
         if (!cName.isEmpty()) n=addTemplateNames(n,cd->name(),cName);
         linkifyText(TextGeneratorOLImpl(ol),cd,md->getBodyDef(),md->name(),n);
       }
