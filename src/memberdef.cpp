@@ -2055,6 +2055,7 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
       )
      )
   {
+#if 0
     // write the member specifier list
     ol.writeLatexSpacing();
     ol.startTypewriter();
@@ -2135,6 +2136,7 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     ol.docify("]");
     ol.endMemberDocPunctuation();
     ol.endTypewriter();
+#endif
   }
   else if (isObjCMethod() && isImplementation())
   {

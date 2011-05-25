@@ -3,7 +3,7 @@ TMAKEPATH = /Users/jscipione/Projects/doxygen_git_svn/tmake/lib/macosx-c++
 ENV       = env TMAKEPATH=$(TMAKEPATH)
 TMAKE     = /Users/jscipione/Projects/doxygen_git_svn/tmake/bin/tmake
 MAKE      = /usr/bin/make
-PERL      = /usr/bin/perl
+PERL      = /opt/local/bin/perl
 RM        = rm -f
 CP        = cp
 VERSION   = 1.7.4-20110426
@@ -12,4 +12,5 @@ INSTTOOL  = /usr/bin/install
 DOXYDOCS  = ..
 DOCDIR    = $(INSTALL)/share/doc/packages/doxygen
 QTDIR     = 
+HAVE_DOT  = /opt/local/bin/dot
 MKSPECS   = -spec macx-g++
