@@ -1539,17 +1539,20 @@ void MemberDef::writeDeclaration(OutputList &ol,
     {
       ArgumentList *declArgList = m_impl->declArgList;
       Argument *a=declArgList->first();
-      if (a)
+      if (!isObjCMethod())
       {
-        ol.startMemberDocPunctuation();
-        ol.docify("("); // start argument list
-        ol.endMemberDocPunctuation();
-      }
-      else
-      {
-        ol.startMemberDocPunctuation();
-        ol.docify("()"); // empty argument list, output innertube
-        ol.endMemberDocPunctuation();
+        if (a)
+        {
+          ol.startMemberDocPunctuation();
+          ol.docify("("); // start argument list
+          ol.endMemberDocPunctuation();
+        }
+        else
+        {
+          ol.startMemberDocPunctuation();
+          ol.docify("()"); // empty argument list, output innertube
+          ol.endMemberDocPunctuation();
+        }
       }
 
       // convert the parameter documentation into a list of @param commands
@@ -1594,7 +1597,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
           ol.docify(", ");
           ol.endMemberDocPunctuation();
         }
-        else
+        else if (!isObjCMethod())
         {
           ol.startMemberDocPunctuation();
           ol.docify(")"); // end argument list
