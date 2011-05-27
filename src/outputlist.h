@@ -400,22 +400,34 @@ class OutputList : public OutputDocInterface
     { forall(&OutputGenerator::startMemberDocSpecifier); }
     void endMemberDocSpecifier()
     { forall(&OutputGenerator::endMemberDocSpecifier); }
-    void startMemberDocScopeName()
-    { forall(&OutputGenerator::startMemberDocScopeName); }
-    void endMemberDocScopeName()
-    { forall(&OutputGenerator::endMemberDocScopeName); }
+    void startMemberDocClassName()
+    { forall(&OutputGenerator::startMemberDocClassName); }
+    void endMemberDocClassName()
+    { forall(&OutputGenerator::endMemberDocClassName); }
+    void startMemberDocMethodName()
+    { forall(&OutputGenerator::startMemberDocMethodName); }
+    void endMemberDocMethodName()
+    { forall(&OutputGenerator::endMemberDocMethodName); }
+    void startMemberDocFunctionName()
+    { forall(&OutputGenerator::startMemberDocFunctionName); }
+    void endMemberDocFunctionName()
+    { forall(&OutputGenerator::endMemberDocFunctionName); }
     void startMemberDocIdentifier()
     { forall(&OutputGenerator::startMemberDocIdentifier); }
     void endMemberDocIdentifier()
     { forall(&OutputGenerator::endMemberDocIdentifier); }
+    void startMemberDocParamName()
+    { forall(&OutputGenerator::startMemberDocParamName); }
+    void endMemberDocParamName()
+    { forall(&OutputGenerator::endMemberDocParamName); }
     void startMemberDocPunctuation()
     { forall(&OutputGenerator::startMemberDocPunctuation); }
     void endMemberDocPunctuation()
     { forall(&OutputGenerator::endMemberDocPunctuation); }
-    void startMemberDocDefaultValue()
-    { forall(&OutputGenerator::startMemberDocDefaultValue); }
-    void endMemberDocDefaultValue()
-    { forall(&OutputGenerator::endMemberDocDefaultValue); }
+    void startMemberDocConstant()
+    { forall(&OutputGenerator::startMemberDocConstant); }
+    void endMemberDocConstant()
+    { forall(&OutputGenerator::endMemberDocConstant); }
     void startMemberDocQualifier()
     { forall(&OutputGenerator::startMemberDocQualifier); }
     void endMemberDocQualifier()

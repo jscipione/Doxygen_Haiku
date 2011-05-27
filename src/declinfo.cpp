@@ -659,21 +659,21 @@ char *declinfoYYtext;
  *	statics
  */
   
-static const char * inputString;
-static int	    inputPosition;
-static QCString      scope;
-static QCString      className;
-static QCString      classTempList;
-static QCString      funcTempList;
-static QCString      type;
-static QCString      name;
-static QCString      args;
-static QCString      tmpType;
+static const char  *inputString;
+static int          inputPosition;
+static QCString     scope;
+static QCString     className;
+static QCString     classTempList;
+static QCString     funcTempList;
+static QCString     type;
+static QCString     name;
+static QCString     args;
+static QCString     tmpType;
 static int          sharpCount;
 static bool         classTempListFound;
 static bool         funcTempListFound;
-static QCString      exceptionString;
-static bool          insideObjC;
+static QCString     exceptionString;
+static bool         insideObjC;
 
 static void addType()
 {
@@ -1235,15 +1235,15 @@ case 22:
 YY_RULE_SETUP
 #line 215 "declinfo.l"
 {
-  				  args+=*declinfoYYtext;
-  				}
+				  args+=*declinfoYYtext;
+				}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 218 "declinfo.l"
 {
-  				  exceptionString+=*declinfoYYtext;
-  				}
+				  exceptionString+=*declinfoYYtext;
+				}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP

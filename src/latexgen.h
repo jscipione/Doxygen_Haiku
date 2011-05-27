@@ -225,14 +225,20 @@ class LatexGenerator : public OutputGenerator
     void endMemberDocName() {}
     void startMemberDocSpecifier() {}
     void endMemberDocSpecifier() {}
-    void startMemberDocScopeName() {}
-    void endMemberDocScopeName() {}
+    void startMemberDocClassName() {}
+    void endMemberDocClassName() {}
+    void startMemberDocMethodName() {}
+    void endMemberDocMethodName() {}
+    void startMemberDocFunctionName() {}
+    void endMemberDocFunctionName() {}
     void startMemberDocIdentifier() {}
     void endMemberDocIdentifier() {}
+    void startMemberDocParamName() {}
+    void endMemberDocParamName() {}
     void startMemberDocPunctuation() {}
     void endMemberDocPunctuation() {}
-    void startMemberDocDefaultValue() {}
-    void endMemberDocDefaultValue() {}
+    void startMemberDocConstant() {}
+    void endMemberDocConstant() {}
     void startMemberDocQualifier() {}
     void endMemberDocQualifier() {}
     void startParameterType(bool,const char *);

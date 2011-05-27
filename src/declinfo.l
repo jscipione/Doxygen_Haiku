@@ -34,21 +34,21 @@
  *	statics
  */
   
-static const char * inputString;
-static int	    inputPosition;
-static QCString      scope;
-static QCString      className;
-static QCString      classTempList;
-static QCString      funcTempList;
-static QCString      type;
-static QCString      name;
-static QCString      args;
-static QCString      tmpType;
+static const char  *inputString;
+static int          inputPosition;
+static QCString     scope;
+static QCString     className;
+static QCString     classTempList;
+static QCString     funcTempList;
+static QCString     type;
+static QCString     name;
+static QCString     args;
+static QCString     tmpType;
 static int          sharpCount;
 static bool         classTempListFound;
 static bool         funcTempListFound;
-static QCString      exceptionString;
-static bool          insideObjC;
+static QCString     exceptionString;
+static bool         insideObjC;
 
 static void addType()
 {
@@ -213,11 +213,11 @@ ID	"$"?([a-z_A-Z\x80-\xFF][a-z_A-Z0-9\x80-\xFF]*)|(@[0-9]+)
 				  BEGIN(ReadExceptions);
   				}
 <ReadArgs>.			{
-  				  args+=*yytext;
-  				}
+				  args+=*yytext;
+				}
 <ReadExceptions>.		{
-  				  exceptionString+=*yytext;
-  				}
+				  exceptionString+=*yytext;
+				}
 <*>.
 <*>\n
 

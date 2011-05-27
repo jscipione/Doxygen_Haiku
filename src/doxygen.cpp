@@ -5319,8 +5319,8 @@ static void findMember(EntryNav *rootNav,
   {
     // extract information from the declarations
     parseFuncDecl(funcDecl,root->lang==SrcLangExt_ObjC,scopeName,funcType,funcName,
-                funcArgs,funcTempList,exceptions
-               );
+                  funcArgs,funcTempList,exceptions
+                 );
   }
   //printf("scopeName=`%s' funcType=`%s' funcName=`%s' funcArgs=`%s'\n",
   //    scopeName.data(),funcType.data(),funcName.data(),funcArgs.data());

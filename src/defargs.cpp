@@ -738,16 +738,16 @@ char *defargsYYtext;
  *	state variables
  */
 static const char      *g_inputString;
-static int	        g_inputPosition;
+static int              g_inputPosition;
 static ArgumentList    *g_argList;
 static QCString        *g_copyArgValue;
 static QCString         g_curArgTypeName;
 static QCString         g_curArgDefValue;
-static QCString		g_curArgName;
-static QCString		g_curArgDocs;
-static QCString		g_curArgAttrib;
-static QCString		g_curArgArray;
-static QCString		g_extraTypeChars;
+static QCString         g_curArgName;
+static QCString         g_curArgDocs;
+static QCString         g_curArgAttrib;
+static QCString         g_curArgArray;
+static QCString         g_extraTypeChars;
 static int              g_argRoundCount;
 static int              g_argSharpCount;
 static int              g_argCurlyCount;

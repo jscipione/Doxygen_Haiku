@@ -2300,23 +2300,51 @@ void HtmlGenerator::startMemberDocSpecifier()
 
 void HtmlGenerator::endMemberDocSpecifier()
 {
-  t << "</span>" << endl;
+  t << "</span>";
 
   DBG_HTML(t << "<!-- endMemberDocSpecifier -->" << endl;)
 }
 
-void HtmlGenerator::startMemberDocScopeName()
+void HtmlGenerator::startMemberDocClassName()
 {
-  DBG_HTML(t << endl << "<!-- startMemberDocScopeName -->" << endl;)
+  DBG_HTML(t << endl << "<!-- startMemberDocClassName -->" << endl;)
 
-  t << "          <span class=\"scopename\">";
+  t << "          <span class=\"classname\">";
 }
 
-void HtmlGenerator::endMemberDocScopeName()
+void HtmlGenerator::endMemberDocClassName()
 {
   t << "</span>";
 
-  DBG_HTML(t << "<!-- endMemberDocScopeName -->" << endl;)
+  DBG_HTML(t << "<!-- endMemberDocClassName -->" << endl;)
+}
+
+void HtmlGenerator::startMemberDocMethodName()
+{
+  DBG_HTML(t << "<!-- startMemberDocFunctionName -->" << endl;)
+
+  t << "<span class=\"methodname\">";
+}
+
+void HtmlGenerator::endMemberDocMethodName()
+{
+  t << "</span>";
+
+  DBG_HTML(t << "<!-- endMemberDocMethodName -->" << endl;)
+}
+
+void HtmlGenerator::startMemberDocFunctionName()
+{
+  DBG_HTML(t << "<!-- startMemberDocFunctionName -->" << endl;)
+
+  t << "<span class=\"methodname\">";
+}
+
+void HtmlGenerator::endMemberDocFunctionName()
+{
+  t << "</span>";
+
+  DBG_HTML(t << "<!-- endMemberDocFunctionName -->" << endl;)
 }
 
 void HtmlGenerator::startMemberDocIdentifier()
@@ -2328,9 +2356,23 @@ void HtmlGenerator::startMemberDocIdentifier()
 
 void HtmlGenerator::endMemberDocIdentifier()
 {
-  t << "</span>" << endl;
+  t << "</span>";
 
   DBG_HTML(t << "<!-- endMemberDocIdentifier -->" << endl;)
+}
+
+void HtmlGenerator::startMemberDocParamName()
+{
+  DBG_HTML(t << "<!-- startMemberDocParamName -->" << endl;)
+
+  t << "<span class=\"paramname\">";
+}
+
+void HtmlGenerator::endMemberDocParamName()
+{
+  t << "</span>";
+
+  DBG_HTML(t << "<!-- endMemberDocParamName -->" << endl;)
 }
 
 void HtmlGenerator::startMemberDocPunctuation()
@@ -2347,18 +2389,18 @@ void HtmlGenerator::endMemberDocPunctuation()
   DBG_HTML(t << "<!-- endMemberDocPunctuation -->" << endl;)
 }
 
-void HtmlGenerator::startMemberDocDefaultValue()
+void HtmlGenerator::startMemberDocConstant()
 {
-  DBG_HTML(t << "<!-- startMemberDocDefaultValue -->" << endl;)
+  DBG_HTML(t << "<!-- startMemberDocConstant -->" << endl;)
 
-  t << "<span class=\"default-value\">";
+  t << "<span class=\"constant\">";
 }
 
-void HtmlGenerator::endMemberDocDefaultValue()
+void HtmlGenerator::endMemberDocConstant()
 {
   t << "</span>";
 
-  DBG_HTML(t << "<!-- endMemberDocDefaultValue -->" << endl;)
+  DBG_HTML(t << "<!-- endMemberDocConstant -->" << endl;)
 }
 
 void HtmlGenerator::startMemberDocQualifier()
