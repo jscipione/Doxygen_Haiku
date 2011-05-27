@@ -1,0 +1,16 @@
+*.pro
+bin/*
+doc/*
+lib/*
+libmd5/*
+objects/*
+packages/rpm/doxygen.spec
+qtools/Makefile.qtools
+src/Makefile.doxygen
+src/Makefile.doxytag
+src/Makefile.libdoxycfg
+src/Makefile.libdoxygen
+.makeconfig
+.tmakeconfig
+Makefile
+VERSION
