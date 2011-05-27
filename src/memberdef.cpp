@@ -300,17 +300,17 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
   }
   if (defArgList->constSpecifier)
   {
-    ol.startMemberDocQualifier();
     ol.writeNonBreakableSpace(1);
+    ol.startMemberDocSpecifier();
     ol.docify("const");
-    ol.endMemberDocQualifier();
+    ol.endMemberDocSpecifier();
   }
   if (defArgList->volatileSpecifier)
   {
-    ol.startMemberDocQualifier();
+    ol.startMemberDocSpecifier();
     ol.writeNonBreakableSpace(1);
     ol.docify("volatile");
-    ol.endMemberDocQualifier();
+    ol.endMemberDocSpecifier();
   }
   return TRUE;
 }
@@ -2055,7 +2055,6 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
       )
      )
   {
-#if 0
     // write the member specifier list
     ol.writeLatexSpacing();
     ol.startTypewriter();
@@ -2136,7 +2135,6 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     ol.docify("]");
     ol.endMemberDocPunctuation();
     ol.endTypewriter();
-#endif
   }
   else if (isObjCMethod() && isImplementation())
   {
