@@ -1539,13 +1539,20 @@ void MemberDef::writeDeclaration(OutputList &ol,
     {
       ArgumentList *declArgList = m_impl->declArgList;
       Argument *a=declArgList->first();
-      // convert the parameter documentation into a list of @param commands
       if (a)
       {
         ol.startMemberDocPunctuation();
         ol.docify("("); // start argument list
         ol.endMemberDocPunctuation();
       }
+      else
+      {
+        ol.startMemberDocPunctuation();
+        ol.docify("()"); // empty argument list, output innertube
+        ol.endMemberDocPunctuation();
+      }
+
+      // convert the parameter documentation into a list of @param commands
       while (a)
       {
         QCString declArgType = a->type.stripWhiteSpace();
