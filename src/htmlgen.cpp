@@ -790,7 +790,7 @@ static void writeTitleArea(FTextStream &t,const char *relPath,
       (disableIndex && searchEngine))
   {
     t << "<div id=\"titlearea\">" << endl;
-    t << "<table cellspacing=\"0\" cellpadding=\"0\">" << endl;
+    t << "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">" << endl;
     t << " <tbody>" << endl;
     t << " <tr style=\"height: 56px;\">" << endl;
     if (!logoName.isEmpty())
@@ -1271,7 +1271,7 @@ void HtmlGenerator::writeHeaderFile(QFile &file, const char *cssname)
   
   t << "<!--BEGIN TITLEAREA-->\n";
   t << "<div id=\"titlearea\">\n";
-  t << "<table cellspacing=\"0\" cellpadding=\"0\">\n";
+  t << "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">\n";
   t << " <tbody>\n";
   t << " <tr style=\"height: 56px;\">\n";
   t << "  <!--BEGIN PROJECT_LOGO-->\n";
@@ -2152,7 +2152,7 @@ void HtmlGenerator::startMemberSections()
   DBG_HTML(t << "<!-- startMemberSections -->" << endl)
   if (Config_getBool("HTML_ALIGN_MEMBERS"))
   {
-    t << "<table class=\"memberdecls\">" << endl;
+    t << "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"memberdecls\">" << endl;
     // HTML is not recursively decomposable, sorry
     //t << "<tr><td></td></tr>" << endl;
   }
@@ -2211,7 +2211,7 @@ void HtmlGenerator::endMemberSubtitle()
 
 void HtmlGenerator::startIndexList() 
 { 
-  t << "<table>"  << endl; 
+  t << "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">"  << endl; 
 }
 
 void HtmlGenerator::endIndexList()
@@ -2278,7 +2278,7 @@ void HtmlGenerator::startMemberDocName(bool /*align*/)
 {
   DBG_HTML(t << "<!-- startMemberDocName -->" << endl;)
 
-  t << "    <table class=\"memname\">" << endl;
+  t << "    <table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"memname\">" << endl;
     
   t << "      <tr>" << endl;
   t << "        <td class=\"memname\">" << endl;
@@ -3255,7 +3255,7 @@ void HtmlGenerator::startConstraintList(const char *header)
 {
   t << "<div class=\"typeconstraint\">" << endl;
   t << "<dl><dt><b>" << header << "</b><dt><dd>" << endl;
-  t << "<table border=\"0\" cellspacing=\"2\" cellpadding=\"0\">" << endl;
+  t << "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\">" << endl;
 }
 
 void HtmlGenerator::startConstraintParam()

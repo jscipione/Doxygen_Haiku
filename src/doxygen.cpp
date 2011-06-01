@@ -2354,8 +2354,8 @@ static bool isVarWithConstructor(EntryNav *rootNav)
          goto done;
       }
       if (a->type.at(a->type.length()-1)=='*' ||
-          a->type.at(a->type.length()-1)=='&')  
-                     // type ends with * or & => pointer or reference
+          a->type.at(a->type.length()-1)=='&')
+                    // type ends with * or & => pointer or reference
       {
         result=FALSE;
         goto done;
@@ -4847,7 +4847,7 @@ static void addMemberDocs(EntryNav *rootNav,
     md->setInbodyDocumentation(root->inbodyDocs,root->inbodyFile,root->inbodyLine);
     md->setDocsForDefinition(!root->proto);
   }
-  else  
+  else
   {
     //printf("overwrite!\n");
     md->setDocumentation(root->doc,root->docFile,root->docLine);

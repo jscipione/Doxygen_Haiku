@@ -719,7 +719,7 @@ char *defargsYYtext;
 #line 44 "defargs.l"
 
 /*
- *	includes
+ *      includes
  */
 #include "qtbc.h"
 #include <stdio.h>
@@ -735,7 +735,7 @@ char *defargsYYtext;
 #define YY_NEVER_INTERACTIVE 1
   
 /* -----------------------------------------------------------------
- *	state variables
+ *      state variables
  */
 static const char      *g_inputString;
 static int              g_inputPosition;
@@ -757,16 +757,16 @@ static int              g_lastDocChar;
 
 /* -----------------------------------------------------------------
  */
-#undef	YY_INPUT
-#define	YY_INPUT(buf,result,max_size) result=yyread(buf,max_size);
+#undef  YY_INPUT
+#define YY_INPUT(buf,result,max_size) result=yyread(buf,max_size);
 
 static int yyread(char *buf,int max_size)
 {
     int c=0;
     while( c < max_size && g_inputString[g_inputPosition] )
     {
-	*buf = g_inputString[g_inputPosition++] ;
-	c++; buf++;
+        *buf = g_inputString[g_inputPosition++] ;
+        c++; buf++;
     }
     return c;
 }
@@ -1102,23 +1102,23 @@ case 2:
 YY_RULE_SETUP
 #line 123 "defargs.l"
 {
-  					  g_curArgTypeName+=" ";
-  					}
+                                          g_curArgTypeName+=" ";
+                                        }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
 #line 126 "defargs.l"
 { 
-					  if (g_curArgTypeName.stripWhiteSpace().isEmpty())
-					  {
-					    g_curArgAttrib=defargsYYtext; // for M$-IDL
-					  }
-					  else // array type
-					  {
-					    g_curArgArray+=defargsYYtext;
-					  }
-					}
+                                          if (g_curArgTypeName.stripWhiteSpace().isEmpty())
+                                          {
+                                            g_curArgAttrib=defargsYYtext; // for M$-IDL
+                                          }
+                                          else // array type
+                                          {
+                                            g_curArgArray+=defargsYYtext;
+                                          }
+                                        }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
@@ -1139,39 +1139,39 @@ case 7:
 YY_RULE_SETUP
 #line 139 "defargs.l"
 {
-  					  g_curArgDefValue+=*defargsYYtext;
-  					  BEGIN( CopyArgString );
-  					}
+                                          g_curArgDefValue+=*defargsYYtext;
+                                          BEGIN( CopyArgString );
+                                        }
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
 #line 143 "defargs.l"
 { 
-  					  // function pointer as argument
-					  g_curArgTypeName+=defargsYYtext;
-					  //g_curArgTypeName=g_curArgTypeName.simplifyWhiteSpace();
-					  BEGIN( ReadFuncArgPtr );
-  					}
+                                          // function pointer as argument
+                                          g_curArgTypeName+=defargsYYtext;
+                                          //g_curArgTypeName=g_curArgTypeName.simplifyWhiteSpace();
+                                          BEGIN( ReadFuncArgPtr );
+                                        }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 149 "defargs.l"
 {
-					  g_curArgName=defargsYYtext;
-  					}
+                                          g_curArgName=defargsYYtext;
+                                        }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 152 "defargs.l"
 { // function pointer
-					  g_curArgTypeName+=defargsYYtext;
-					  //g_curArgTypeName=g_curArgTypeName.simplifyWhiteSpace();
-					  g_readArgContext = ReadFuncArgType;
-					  g_copyArgValue=&g_curArgTypeName;
-					  g_argRoundCount=0;
-					  BEGIN( CopyArgRound2 );
-					}
+                                          g_curArgTypeName+=defargsYYtext;
+                                          //g_curArgTypeName=g_curArgTypeName.simplifyWhiteSpace();
+                                          g_readArgContext = ReadFuncArgType;
+                                          g_copyArgValue=&g_curArgTypeName;
+                                          g_argRoundCount=0;
+                                          BEGIN( CopyArgRound2 );
+                                        }
 	YY_BREAK
 case 11:
 *yy_cp = (yy_hold_char); /* undo effects of setting up defargsYYtext */
@@ -1180,337 +1180,337 @@ YY_DO_BEFORE_ACTION; /* set up defargsYYtext again */
 YY_RULE_SETUP
 #line 160 "defargs.l"
 { // pointer to fixed size array
-					  g_curArgTypeName+=defargsYYtext;
-					  g_curArgTypeName+=g_curArgName;
-					  //g_curArgTypeName=g_curArgTypeName.simplifyWhiteSpace();
-					  BEGIN( ReadFuncArgType );
-					}
+                                          g_curArgTypeName+=defargsYYtext;
+                                          g_curArgTypeName+=g_curArgName;
+                                          //g_curArgTypeName=g_curArgTypeName.simplifyWhiteSpace();
+                                          BEGIN( ReadFuncArgType );
+                                        }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
 #line 166 "defargs.l"
 { // redundant braces detected / remove them
-					  int i=g_curArgTypeName.findRev('('),l=g_curArgTypeName.length();
-					  if (i!=-1)
-					    g_curArgTypeName=g_curArgTypeName.left(i)+
-					                   g_curArgTypeName.right(l-i-1);
-					  g_curArgTypeName+=g_curArgName;
-					  BEGIN( ReadFuncArgType );
-					}
+                                          int i=g_curArgTypeName.findRev('('),l=g_curArgTypeName.length();
+                                          if (i!=-1)
+                                            g_curArgTypeName=g_curArgTypeName.left(i)+
+                                                           g_curArgTypeName.right(l-i-1);
+                                          g_curArgTypeName+=g_curArgName;
+                                          BEGIN( ReadFuncArgType );
+                                        }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
 #line 174 "defargs.l"
 { // handle operators in defargs
-  					  g_curArgTypeName+=defargsYYtext;
-  					}
+                                          g_curArgTypeName+=defargsYYtext;
+                                        }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 177 "defargs.l"
-{	 
-					  if (YY_START==ReadFuncArgType)
-					  {
-					    g_curArgTypeName+=*defargsYYtext;
-					    g_copyArgValue=&g_curArgTypeName;
-					  }
-					  else // YY_START==ReadFuncArgDef
-					  {
-					    g_curArgDefValue+=*defargsYYtext;
-					    g_copyArgValue=&g_curArgDefValue;
-					  }
-					  g_readArgContext = YY_START; 
-					  if (*defargsYYtext=='(')
-					  {
-					    g_argRoundCount=0; 
-					    BEGIN( CopyArgRound ); 
-					  }
-					  else if (*defargsYYtext=='{')
-					  {
-					    g_argCurlyCount=0; 
-					    BEGIN( CopyArgCurly ); 
-					  }
-					  else // defargsYYtext=='<'
-					  {
-					    g_argSharpCount=0; 
-					    BEGIN( CopyArgSharp ); 
-					  }
-					}
+{        
+                                          if (YY_START==ReadFuncArgType)
+                                          {
+                                            g_curArgTypeName+=*defargsYYtext;
+                                            g_copyArgValue=&g_curArgTypeName;
+                                          }
+                                          else // YY_START==ReadFuncArgDef
+                                          {
+                                            g_curArgDefValue+=*defargsYYtext;
+                                            g_copyArgValue=&g_curArgDefValue;
+                                          }
+                                          g_readArgContext = YY_START; 
+                                          if (*defargsYYtext=='(')
+                                          {
+                                            g_argRoundCount=0; 
+                                            BEGIN( CopyArgRound ); 
+                                          }
+                                          else if (*defargsYYtext=='{')
+                                          {
+                                            g_argCurlyCount=0; 
+                                            BEGIN( CopyArgCurly ); 
+                                          }
+                                          else // defargsYYtext=='<'
+                                          {
+                                            g_argSharpCount=0; 
+                                            BEGIN( CopyArgSharp ); 
+                                          }
+                                        }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 205 "defargs.l"
 {
-  					  g_argRoundCount++;
-					  *g_copyArgValue += *defargsYYtext;
-  					}
+                                          g_argRoundCount++;
+                                          *g_copyArgValue += *defargsYYtext;
+                                        }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 209 "defargs.l"
 {
-					  *g_copyArgValue += defargsYYtext;
-					  if (g_argRoundCount>0) 
-					  {
-					    g_argRoundCount--;
-					  }
-					  else 
-					  {
-					    if (YY_START==CopyArgRound2)
-					    {
-					      *g_copyArgValue+=" "+g_curArgName;
-					    }
-					    BEGIN( g_readArgContext );
-					  }
-  					}
+                                          *g_copyArgValue += defargsYYtext;
+                                          if (g_argRoundCount>0) 
+                                          {
+                                            g_argRoundCount--;
+                                          }
+                                          else 
+                                          {
+                                            if (YY_START==CopyArgRound2)
+                                            {
+                                              *g_copyArgValue+=" "+g_curArgName;
+                                            }
+                                            BEGIN( g_readArgContext );
+                                          }
+                                        }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 224 "defargs.l"
 {
-  					  g_argSharpCount++;
-					  *g_copyArgValue += *defargsYYtext;
-  					}
+                                          g_argSharpCount++;
+                                          *g_copyArgValue += *defargsYYtext;
+                                        }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 228 "defargs.l"
 {
-					  *g_copyArgValue += *defargsYYtext;
-					  if (g_argSharpCount>0) g_argSharpCount--;
-					  else BEGIN( g_readArgContext );
-  					}
+                                          *g_copyArgValue += *defargsYYtext;
+                                          if (g_argSharpCount>0) g_argSharpCount--;
+                                          else BEGIN( g_readArgContext );
+                                        }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
 #line 233 "defargs.l"
 {
-  					  g_argCurlyCount++;
-					  *g_copyArgValue += *defargsYYtext;
-  					}
+                                          g_argCurlyCount++;
+                                          *g_copyArgValue += *defargsYYtext;
+                                        }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
 #line 237 "defargs.l"
 {
-					  *g_copyArgValue += *defargsYYtext;
-					  if (g_argCurlyCount>0) g_argCurlyCount--;
-					  else BEGIN( g_readArgContext );
-  					}
+                                          *g_copyArgValue += *defargsYYtext;
+                                          if (g_argCurlyCount>0) g_argCurlyCount--;
+                                          else BEGIN( g_readArgContext );
+                                        }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 242 "defargs.l"
 {
-					  g_curArgDefValue+=defargsYYtext;
-  					}
+                                          g_curArgDefValue+=defargsYYtext;
+                                        }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 245 "defargs.l"
 {
-					  g_curArgDefValue+=*defargsYYtext;
-					  BEGIN( ReadFuncArgDef );
-  					}
+                                          g_curArgDefValue+=*defargsYYtext;
+                                          BEGIN( ReadFuncArgDef );
+                                        }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 249 "defargs.l"
 {
-					  BEGIN( ReadFuncArgDef );
-  					}
+                                          BEGIN( ReadFuncArgDef );
+                                        }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 252 "defargs.l"
 {
-					  g_lastDocContext=YY_START;
-					  g_lastDocChar=*defargsYYtext;  
-					  QCString text=defargsYYtext;
-					  if (text.find("//")!=-1)
-					    BEGIN( ReadDocLine );
-					  else
-					    BEGIN( ReadDocBlock );
-  					}
+                                          g_lastDocContext=YY_START;
+                                          g_lastDocChar=*defargsYYtext;  
+                                          QCString text=defargsYYtext;
+                                          if (text.find("//")!=-1)
+                                            BEGIN( ReadDocLine );
+                                          else
+                                            BEGIN( ReadDocBlock );
+                                        }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 261 "defargs.l"
 {
-  					  if (*defargsYYtext==')' && g_curArgTypeName.stripWhiteSpace().isEmpty())
-					  {
-					    g_curArgTypeName+=*defargsYYtext;
-					    BEGIN(FuncQual);
-					  }
-					  else
-					  {
-					    g_curArgTypeName=removeRedundantWhiteSpace(g_curArgTypeName);
-					    g_curArgDefValue=g_curArgDefValue.stripWhiteSpace();
-					    //printf("curArgType=`%s' curArgDefVal=`%s'\n",g_curArgTypeName.data(),g_curArgDefValue.data());
-					    int l=g_curArgTypeName.length();
-					    if (l>0)
-					    {
-					      int i=l-1;
-					      while (i>=0 && (isspace((uchar)g_curArgTypeName.at(i)) || g_curArgTypeName.at(i)=='.')) i--;
-					      while (i>=0 && isId(g_curArgTypeName.at(i))) i--;
-					      Argument *a = new Argument; 
-					      a->attrib = g_curArgAttrib.copy();
-					      //printf("a->type=%s a->name=%s i=%d l=%d\n",
-					      //        a->type.data(),a->name.data(),i,l);
-					      a->array.resize(0);
-					      if (i==l-1 && g_curArgTypeName.at(i)==')') // function argument
-					      {
-						int bi=g_curArgTypeName.find('(');
-						int fi=bi-1;
-						//printf("func arg fi=%d\n",fi);
-						while (fi>=0 && isId(g_curArgTypeName.at(fi))) fi--;
-						if (fi>=0)
-						{
-						  a->type  = g_curArgTypeName.left(fi+1);
-						  a->name  = g_curArgTypeName.mid(fi+1,bi-fi-1).stripWhiteSpace();
-						  a->array = g_curArgTypeName.right(l-bi);
-						}
-						else
-						{
-						  a->type = g_curArgTypeName;
-						}
-					      }
-					      else if (i>=0 && g_curArgTypeName.at(i)!=':')
-					      { // type contains a name
-						a->type = removeRedundantWhiteSpace(g_curArgTypeName.left(i+1)).stripWhiteSpace();
-						a->name = g_curArgTypeName.right(l-i-1).stripWhiteSpace();
+                                          if (*defargsYYtext==')' && g_curArgTypeName.stripWhiteSpace().isEmpty())
+                                          {
+                                            g_curArgTypeName+=*defargsYYtext;
+                                            BEGIN(FuncQual);
+                                          }
+                                          else
+                                          {
+                                            g_curArgTypeName=removeRedundantWhiteSpace(g_curArgTypeName);
+                                            g_curArgDefValue=g_curArgDefValue.stripWhiteSpace();
+                                            //printf("curArgType=`%s' curArgDefVal=`%s'\n",g_curArgTypeName.data(),g_curArgDefValue.data());
+                                            int l=g_curArgTypeName.length();
+                                            if (l>0)
+                                            {
+                                              int i=l-1;
+                                              while (i>=0 && (isspace((uchar)g_curArgTypeName.at(i)) || g_curArgTypeName.at(i)=='.')) i--;
+                                              while (i>=0 && isId(g_curArgTypeName.at(i))) i--;
+                                              Argument *a = new Argument; 
+                                              a->attrib = g_curArgAttrib.copy();
+                                              //printf("a->type=%s a->name=%s i=%d l=%d\n",
+                                              //        a->type.data(),a->name.data(),i,l);
+                                              a->array.resize(0);
+                                              if (i==l-1 && g_curArgTypeName.at(i)==')') // function argument
+                                              {
+                                                int bi=g_curArgTypeName.find('(');
+                                                int fi=bi-1;
+                                                //printf("func arg fi=%d\n",fi);
+                                                while (fi>=0 && isId(g_curArgTypeName.at(fi))) fi--;
+                                                if (fi>=0)
+                                                {
+                                                  a->type  = g_curArgTypeName.left(fi+1);
+                                                  a->name  = g_curArgTypeName.mid(fi+1,bi-fi-1).stripWhiteSpace();
+                                                  a->array = g_curArgTypeName.right(l-bi);
+                                                }
+                                                else
+                                                {
+                                                  a->type = g_curArgTypeName;
+                                                }
+                                              }
+                                              else if (i>=0 && g_curArgTypeName.at(i)!=':')
+                                              { // type contains a name
+                                                a->type = removeRedundantWhiteSpace(g_curArgTypeName.left(i+1)).stripWhiteSpace();
+                                                a->name = g_curArgTypeName.right(l-i-1).stripWhiteSpace();
 
-						// if the type becomes a type specifier only then we make a mistake
-						// and need to correct it to avoid seeing a nameless parameter
-						// "struct A" as a parameter with type "struct" and name "A".
-						int sv=0;
-						if      (a->type.left(6)=="const ")    sv=6;
-						else if (a->type.left(9)=="volatile ") sv=9;
+                                                // if the type becomes a type specifier only then we make a mistake
+                                                // and need to correct it to avoid seeing a nameless parameter
+                                                // "struct A" as a parameter with type "struct" and name "A".
+                                                int sv=0;
+                                                if      (a->type.left(6)=="const ")    sv=6;
+                                                else if (a->type.left(9)=="volatile ") sv=9;
 
-						if (a->type.mid(sv)=="struct"    ||
-						    a->type.mid(sv)=="union"     ||
-						    a->type.mid(sv)=="class"     ||
-						    a->type.mid(sv)=="typename"  ||
-						    a->type=="const"             ||
-						    a->type=="volatile"
-						   )
-						{ 
-						  a->type = a->type + " " + a->name;
-						  a->name.resize(0);
-						}
-						//printf(" --> a->type='%s'\n",a->type.data());
-					      }
-					      else // assume only the type was specified, try to determine name later 
-					      {
-						a->type = removeRedundantWhiteSpace(g_curArgTypeName);  
-					      }
-					      a->array  += removeRedundantWhiteSpace(g_curArgArray);
-					      //printf("array=%s\n",a->array.data());
-					      int alen = a->array.length();
-					      if (alen>2 && a->array.at(0)=='(' && 
-						            a->array.at(alen-1)==')') // fix-up for int *(a[10])
-					      {
-						int i=a->array.find('[')-1;
-						a->array = a->array.mid(1,alen-2);
-						if (i>0 && a->name.isEmpty())
-						{
-						  a->name  = a->array.left(i).stripWhiteSpace();
-						  a->array = a->array.mid(i);
-						}
-					      }
-					      a->defval = g_curArgDefValue.copy();
-					      //printf("a->type=%s a->name=%s a->defval=\"%s\"\n",a->type.data(),a->name.data(),a->defval.data());
-					      a->docs   = g_curArgDocs.stripWhiteSpace();
-					      //printf("Argument `%s' `%s' adding docs=`%s'\n",a->type.data(),a->name.data(),a->docs.data());
-					      g_argList->append(a);
-					    }
-					    g_curArgAttrib.resize(0);
-					    g_curArgTypeName.resize(0);
-					    g_curArgDefValue.resize(0);
-					    g_curArgArray.resize(0);
-					    g_curArgDocs.resize(0);
-					    if (*defargsYYtext==')')
-					    {
-					      BEGIN(FuncQual);
-					      //printf(">>> end of argument list\n");
-					    }
-					    else
-					    {
-					      BEGIN( ReadFuncArgType );
-					    }
-					  }
-  					}
+                                                if (a->type.mid(sv)=="struct"    ||
+                                                    a->type.mid(sv)=="union"     ||
+                                                    a->type.mid(sv)=="class"     ||
+                                                    a->type.mid(sv)=="typename"  ||
+                                                    a->type=="const"             ||
+                                                    a->type=="volatile"
+                                                   )
+                                                { 
+                                                  a->type = a->type + " " + a->name;
+                                                  a->name.resize(0);
+                                                }
+                                                //printf(" --> a->type='%s'\n",a->type.data());
+                                              }
+                                              else // assume only the type was specified, try to determine name later 
+                                              {
+                                                a->type = removeRedundantWhiteSpace(g_curArgTypeName);  
+                                              }
+                                              a->array  += removeRedundantWhiteSpace(g_curArgArray);
+                                              //printf("array=%s\n",a->array.data());
+                                              int alen = a->array.length();
+                                              if (alen>2 && a->array.at(0)=='(' && 
+                                                            a->array.at(alen-1)==')') // fix-up for int *(a[10])
+                                              {
+                                                int i=a->array.find('[')-1;
+                                                a->array = a->array.mid(1,alen-2);
+                                                if (i>0 && a->name.isEmpty())
+                                                {
+                                                  a->name  = a->array.left(i).stripWhiteSpace();
+                                                  a->array = a->array.mid(i);
+                                                }
+                                              }
+                                              a->defval = g_curArgDefValue.copy();
+                                              //printf("a->type=%s a->name=%s a->defval=\"%s\"\n",a->type.data(),a->name.data(),a->defval.data());
+                                              a->docs   = g_curArgDocs.stripWhiteSpace();
+                                              //printf("Argument `%s' `%s' adding docs=`%s'\n",a->type.data(),a->name.data(),a->docs.data());
+                                              g_argList->append(a);
+                                            }
+                                            g_curArgAttrib.resize(0);
+                                            g_curArgTypeName.resize(0);
+                                            g_curArgDefValue.resize(0);
+                                            g_curArgArray.resize(0);
+                                            g_curArgDocs.resize(0);
+                                            if (*defargsYYtext==')')
+                                            {
+                                              BEGIN(FuncQual);
+                                              //printf(">>> end of argument list\n");
+                                            }
+                                            else
+                                            {
+                                              BEGIN( ReadFuncArgType );
+                                            }
+                                          }
+                                        }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
 #line 365 "defargs.l"
 { 
-  					  QCString name=defargsYYtext; //resolveDefines(defargsYYtext);
-					  if (YY_START==ReadFuncArgType && g_curArgArray=="[]") // Java style array
-					  {
-					    g_curArgTypeName+=" []";
-					    g_curArgArray.resize(0);
-					  }
-					  //printf("resolveName `%s'->`%s'\n",defargsYYtext,name.data());
-  					  g_curArgTypeName+=name;
-					}
+                                          QCString name=defargsYYtext; //resolveDefines(defargsYYtext);
+                                          if (YY_START==ReadFuncArgType && g_curArgArray=="[]") // Java style array
+                                          {
+                                            g_curArgTypeName+=" []";
+                                            g_curArgArray.resize(0);
+                                          }
+                                          //printf("resolveName `%s'->`%s'\n",defargsYYtext,name.data());
+                                          g_curArgTypeName+=name;
+                                        }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
 #line 375 "defargs.l"
 { 
-  					  g_curArgTypeName+=*defargsYYtext;
-					}
+                                          g_curArgTypeName+=*defargsYYtext;
+                                        }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 379 "defargs.l"
 {
-  					  g_curArgDefValue+=defargsYYtext;
-  					}
+                                          g_curArgDefValue+=defargsYYtext;
+                                        }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
 #line 382 "defargs.l"
 {
-					  g_curArgDefValue+=*defargsYYtext;
-  					}
+                                          g_curArgDefValue+=*defargsYYtext;
+                                        }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
 #line 385 "defargs.l"
 {
-  					  QCString name=defargsYYtext; //resolveDefines(defargsYYtext);
-					  *g_copyArgValue+=name;
-					}
+                                          QCString name=defargsYYtext; //resolveDefines(defargsYYtext);
+                                          *g_copyArgValue+=name;
+                                        }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 389 "defargs.l"
 {
-					  *g_copyArgValue += *defargsYYtext;
-					}
+                                          *g_copyArgValue += *defargsYYtext;
+                                        }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
 #line 392 "defargs.l"
 { 
-					  g_argList->constSpecifier=TRUE;
-					}
+                                          g_argList->constSpecifier=TRUE;
+                                        }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
 #line 395 "defargs.l"
 { 
-					  g_argList->volatileSpecifier=TRUE;
-					}
+                                          g_argList->volatileSpecifier=TRUE;
+                                        }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
 #line 398 "defargs.l"
 { 
-					  g_argList->pureSpecifier=TRUE;
-					}
+                                          g_argList->pureSpecifier=TRUE;
+                                        }
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
@@ -1518,68 +1518,68 @@ YY_RULE_SETUP
 #line 401 "defargs.l"
 { // for functions returning a pointer to an array, 
                                           // i.e. ")[]" in "int (*f(int))[4]" with argsString="(int))[4]"
-  					  g_extraTypeChars=defargsYYtext;
-  					}
+                                          g_extraTypeChars=defargsYYtext;
+                                        }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 405 "defargs.l"
 {
-  					  g_curArgDocs+=defargsYYtext;
-  					}
+                                          g_curArgDocs+=defargsYYtext;
+                                        }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 408 "defargs.l"
 {
-  					  g_curArgDocs+=defargsYYtext;
-  					}
+                                          g_curArgDocs+=defargsYYtext;
+                                        }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 411 "defargs.l"
 { 
-  					  if (g_lastDocChar!=0)
-					    unput(g_lastDocChar);
-  					  BEGIN(g_lastDocContext); 
-					}
+                                          if (g_lastDocChar!=0)
+                                            unput(g_lastDocChar);
+                                          BEGIN(g_lastDocContext); 
+                                        }
 	YY_BREAK
 case 39:
 /* rule 39 can match eol */
 YY_RULE_SETUP
 #line 416 "defargs.l"
 {
-  					  if (g_lastDocChar!=0)
-					    unput(g_lastDocChar);
-					  BEGIN(g_lastDocContext);
-  					}
+                                          if (g_lastDocChar!=0)
+                                            unput(g_lastDocChar);
+                                          BEGIN(g_lastDocContext);
+                                        }
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
 #line 421 "defargs.l"
 {
-  					  g_curArgDocs+=*defargsYYtext;
-  					}
+                                          g_curArgDocs+=*defargsYYtext;
+                                        }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
 #line 424 "defargs.l"
 {
-  					  g_curArgDocs+=*defargsYYtext;
-  					}
+                                          g_curArgDocs+=*defargsYYtext;
+                                        }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
 #line 427 "defargs.l"
 {
-  					  g_lastDocContext=YY_START;
-					  g_lastDocChar=0;  
-					  if (defargsYYtext[1]=='/')
-					    BEGIN( ReadDocLine );
-					  else
-  					    BEGIN( ReadDocBlock );
-  					}
+                                          g_lastDocContext=YY_START;
+                                          g_lastDocChar=0;  
+                                          if (defargsYYtext[1]=='/')
+                                            BEGIN( ReadDocLine );
+                                          else
+                                            BEGIN( ReadDocBlock );
+                                        }
 	YY_BREAK
 case 43:
 /* rule 43 can match eol */

@@ -64,7 +64,7 @@ struct Argument
   /*! Construct a new argument. */
   Argument() {}
   /*! Copy an argument (does a deep copy of all strings). */
-  Argument(const Argument &a) 
+  Argument(const Argument &a)
   { 
     attrib=a.attrib.copy();
     type=a.type.copy(); 

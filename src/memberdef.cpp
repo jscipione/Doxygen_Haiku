@@ -176,7 +176,9 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
       if (hasFuncPtrType) n=a->type.left(wp);
       if (md->isObjCMethod()) { n.prepend("("); n.append(")"); }
       if (!cName.isEmpty()) n=addTemplateNames(n,cd->name(),cName);
+      ol.startMemberDocSpecifier();
       linkifyText(TextGeneratorOLImpl(ol),cd,md->getBodyDef(),md->name(),n);
+      ol.endMemberDocSpecifier();
     }
     else // non-function pointer type
     {
@@ -205,7 +207,7 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
     }
     if (hasFuncPtrType)
     {
-      ol.docify(a->type.mid(wp,vp-wp)); 
+      ol.docify(a->type.mid(wp,vp-wp));
     }
     if (!a->name.isEmpty() || (a->name.isEmpty() && a->type=="...")) // argument has a name
     {
@@ -235,11 +237,9 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
       ol.startMemberDocPunctuation();
       ol.docify(" = ");
       ol.endMemberDocPunctuation();
-      ol.startTypewriter();
       ol.startMemberDocConstant();
       linkifyText(TextGeneratorOLImpl(ol),cd,md->getBodyDef(),md->name(),n,FALSE,TRUE,TRUE);
       ol.endMemberDocConstant();
-      ol.endTypewriter();
     }
     a=defArgList->next();
     if (a) // there are more arguments
@@ -292,8 +292,8 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
   ol.popGeneratorState();
   if (md->extraTypeChars())
   {
-    ol.startMemberDocQualifier();
     ol.writeNonBreakableSpace(1);
+    ol.startMemberDocQualifier();
     ol.docify(md->extraTypeChars());
     ol.endMemberDocQualifier();
   }
@@ -306,8 +306,8 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
   }
   if (defArgList->volatileSpecifier)
   {
-    ol.startMemberDocSpecifier();
     ol.writeNonBreakableSpace(1);
+    ol.startMemberDocSpecifier();
     ol.docify("volatile");
     ol.endMemberDocSpecifier();
   }
@@ -1224,9 +1224,9 @@ bool MemberDef::isBriefSectionVisible() const
 }
 
 void MemberDef::writeDeclaration(OutputList &ol,
-               ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd,
-               bool inGroup
-               )
+                                 ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd,
+                                 bool inGroup
+                                )
 {
   //printf("%s MemberDef::writeDeclaration() inGroup=%d\n",name().data(),inGroup);
 
@@ -1400,7 +1400,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
                     name(),                  // 
                     ltype.left(i),           // text
                     TRUE                     // autoBreak
-                   ); 
+                   );
         getAnonymousEnumType()->writeEnumDeclaration(ol,cd,nd,fd,gd);
         //ol+=*getAnonymousEnumType()->enumDecl();
         linkifyText(TextGeneratorOLImpl(ol),d,m_impl->fileDef,name(),ltype.right(ltype.length()-i-l),TRUE); 
@@ -1414,7 +1414,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
                     name(),                  // 
                     ltype,                   // text
                     TRUE                     // autoBreak
-                   ); 
+                   );
       }
     }
   }
@@ -1429,6 +1429,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
       ltype.prepend("(");
       ltype.append(")");
     }
+    ol.startMemberDocSpecifier();
     linkifyText(TextGeneratorOLImpl(ol), // out
                 d,                       // scope
                 getBodyDef(),            // fileScope
@@ -1436,6 +1437,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
                 ltype,                   // text
                 TRUE                     // autoBreak
                );
+    ol.endMemberDocSpecifier();
   }
   bool htmlOn = ol.isEnabled(OutputGenerator::Html);
   if (htmlOn && Config_getBool("HTML_ALIGN_MEMBERS") && !ltype.isEmpty())
@@ -1474,11 +1476,11 @@ void MemberDef::writeDeclaration(OutputList &ol,
       {
         //printf("anchor=%s ann_anchor=%s\n",anchor(),annMemb->anchor());
         m_impl->annMemb->writeLink(ol,
-            m_impl->annMemb->getClassDef(),
-            m_impl->annMemb->getNamespaceDef(),
-            m_impl->annMemb->getFileDef(),
-            m_impl->annMemb->getGroupDef()
-                          );
+                                   m_impl->annMemb->getClassDef(),
+                                   m_impl->annMemb->getNamespaceDef(),
+                                   m_impl->annMemb->getFileDef(),
+                                   m_impl->annMemb->getGroupDef()
+                                  );
         m_impl->annMemb->setAnonymousUsed();
         setAnonymousUsed();
       }
@@ -1486,8 +1488,10 @@ void MemberDef::writeDeclaration(OutputList &ol,
       {
         //printf("writeLink %s->%d\n",name.data(),hasDocumentation());
         ClassDef *rcd = cd;
-        if (isReference() && m_impl->classDef) rcd = m_impl->classDef; 
+        if (isReference() && m_impl->classDef) rcd = m_impl->classDef;
+        ol.startMemberDocMethodName();
         writeLink(ol,rcd,nd,fd,gd);
+        ol.endMemberDocMethodName();
       }
     }
     else if (isDocumentedFriendClass())
@@ -1539,30 +1543,27 @@ void MemberDef::writeDeclaration(OutputList &ol,
     {
       ArgumentList *declArgList = m_impl->declArgList;
       Argument *a=declArgList->first();
-      if (!isObjCMethod())
+      if (a)
       {
-        if (a)
-        {
-          ol.startMemberDocPunctuation();
-          ol.docify("("); // start argument list
-          ol.endMemberDocPunctuation();
-        }
-        else
-        {
-          ol.startMemberDocPunctuation();
-          ol.docify("()"); // empty argument list, output innertube
-          ol.endMemberDocPunctuation();
-        }
+        ol.startMemberDocPunctuation();
+        ol.docify("("); // start argument list
+        ol.endMemberDocPunctuation();
+      }
+      else
+      {
+        ol.startMemberDocPunctuation();
+        ol.docify("()"); // empty argument list, output innertube
+        ol.endMemberDocPunctuation();
       }
 
       // convert the parameter documentation into a list of @param commands
       while (a)
       {
-        QCString declArgType = a->type.stripWhiteSpace();
-        QCString declArgName = a->name.stripWhiteSpace();
-        QCString declArgDefVal = a->defval.stripWhiteSpace();
+        QCString declArgType = a->type.copy();
+        QCString declArgName = a->name.copy();
+        QCString declArgDefVal = a->defval.copy();
         //printf("\n\n\n\ntype='%s' name='%s' defval='%s'\n\n\n\n", declArgType, declArgName, declArgDefVal);
-        if (declArgType.length()>0)
+        if (!declArgType.isEmpty())
         {
           // Remove space before pointer operator
           int pp = declArgType.findRev(" *");
@@ -1573,22 +1574,24 @@ void MemberDef::writeDeclaration(OutputList &ol,
           ol.endMemberDocSpecifier();
           ol.docify(" ");
         }
-        if (declArgName.length()>0)
+        if (!declArgName.isEmpty())
         {
           ol.startMemberDocParamName();
           linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgName,m_impl->annMemb,TRUE,FALSE,s_indentLevel);
           ol.endMemberDocParamName();
         }
-        if (declArgDefVal.length()>0)
+        if (!a->array.isEmpty())
+        {
+          ol.docify(a->array);
+        }
+        if (!declArgDefVal.isEmpty())
         {
           ol.startMemberDocPunctuation();
           ol.docify(" = ");
           ol.endMemberDocPunctuation();
-          ol.startTypewriter();
           ol.startMemberDocConstant();
           linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgDefVal);
           ol.endMemberDocConstant();
-          ol.endTypewriter();
         }
 
         a=declArgList->next();
@@ -1597,12 +1600,17 @@ void MemberDef::writeDeclaration(OutputList &ol,
           ol.docify(", ");
           ol.endMemberDocPunctuation();
         }
-        else if (!isObjCMethod())
+        else
         {
           ol.startMemberDocPunctuation();
           ol.docify(")"); // end argument list
           ol.endMemberDocPunctuation();
         }
+
+        // Clean up
+        declArgType.resize(0);
+        declArgName.resize(0);
+        declArgDefVal.resize(0);
       }
     } else {
       linkifyText(TextGeneratorOLImpl(ol), // out
@@ -1637,13 +1645,19 @@ void MemberDef::writeDeclaration(OutputList &ol,
   {
     if (!isDefine()) 
     {
-      ol.writeString(" = "); 
+      ol.startMemberDocPunctuation();
+      ol.writeString(" = ");
+      ol.endMemberDocPunctuation();
+      ol.startMemberDocConstant();
       linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),m_impl->initializer.simplifyWhiteSpace());
+      ol.endMemberDocConstant();
     }
     else 
     {
       ol.writeNonBreakableSpace(3);
+      ol.startMemberDocConstant();
       linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),m_impl->initializer);
+      ol.endMemberDocConstant();
     }
   }
 
@@ -2093,10 +2107,10 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     else
     {
       if (isFunction()) ol.startMemberDocMethodName();
-      else ol.startMemberDocIdentifier();
+      else ol.startMemberDocSpecifier();
       linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef);
       if (isFunction()) ol.endMemberDocMethodName();
-      else ol.endMemberDocIdentifier();
+      else ol.endMemberDocSpecifier();
       hasParameterList=writeDefArgumentList(ol,cd,scopeName,this);
     }
 
@@ -2111,7 +2125,7 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
       }
       else 
       {
-        ol.writeNonBreakableSpace(3);
+        //ol.writeNonBreakableSpace(3);
         linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),m_impl->initializer);
       }
     }
@@ -2138,8 +2152,8 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     // write the member specifier list
     ol.writeLatexSpacing();
     ol.startTypewriter();
-    ol.startMemberDocPunctuation();
     ol.writeNonBreakableSpace(1);
+    ol.startMemberDocPunctuation();
     ol.docify("[");
     ol.endMemberDocPunctuation();
     QStrList sl;
@@ -3175,15 +3189,15 @@ void MemberDef::writeEnumDeclaration(OutputList &typeDecl,
         Doxygen::tagFile << "      <arglist>" << convertToXML(argsString()) << "</arglist>" << endl; 
         Doxygen::tagFile << "    </member>" << endl;
       }
-      typeDecl.startMemberDocIdentifier();
+      typeDecl.startMemberDocSpecifier();
       writeLink(typeDecl,cd,nd,fd,gd);
-      typeDecl.endMemberDocIdentifier();
+      typeDecl.endMemberDocSpecifier();
     }
     else
     {
-      typeDecl.startMemberDocIdentifier();
+      typeDecl.startMemberDocSpecifier();
       typeDecl.docify(n);
-      typeDecl.endMemberDocIdentifier();
+      typeDecl.endMemberDocSpecifier();
     }
     typeDecl.writeChar(' ');
   }
@@ -3227,13 +3241,13 @@ void MemberDef::writeEnumDeclaration(OutputList &typeDecl,
               Doxygen::tagFile << "      <arglist>" << convertToXML(fmd->argsString()) << "</arglist>" << endl; 
               Doxygen::tagFile << "    </member>" << endl;
             }
-            typeDecl.endMemberDocConstant();
+            typeDecl.startMemberDocConstant();
             fmd->writeLink(typeDecl,cd,nd,fd,gd);
             typeDecl.endMemberDocConstant();
           }
           else // no docs for this enum value
           {
-            typeDecl.endMemberDocConstant();
+            typeDecl.startMemberDocConstant();
             typeDecl.docify(fmd->name());
             typeDecl.endMemberDocConstant();
           }
