@@ -2443,8 +2443,8 @@ void HtmlGenerator::startParameterType(bool first,const char *key)
     t << "      <tr>" << endl;
     t << "        <td class=\"paramkey\">";
     if (key) t << key;
-    t << "</td>" << endl;
-    t << "        <td></td>" << endl;
+    t << "</td>";
+    t << "        <td></td>";
     t << "        <td class=\"paramtype\">";
   }
 }
@@ -2475,8 +2475,7 @@ void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeParen)
         t << ")";
         endMemberDocPunctuation();
       }
-      t << "</td>" << endl;
-      t << "        <td>";
+      t << "</td><td>";
     }
     else
     {

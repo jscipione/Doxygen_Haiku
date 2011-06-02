@@ -183,14 +183,16 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
     else // non-function pointer type
     {
       QCString n=a->type;
-      if (md->isObjCMethod()) { n.prepend("("); n.append(")"); }
       if (a->type!="...")
       {
         if (!cName.isEmpty()) n=addTemplateNames(n,cd->name(),cName);
-        // Remove space before pointer operator
         int pp = n.findRev(" *");
-        if (pp!=-1) n.remove((uint)pp, 1);
+        if (pp!=-1) {
+          // Remove space before pointer operator
+          n.remove(pp, 1);
+        }
 
+        if (md->isObjCMethod()) { n.prepend("("); n.append(")"); }
         ol.startMemberDocSpecifier();
         linkifyText(TextGeneratorOLImpl(ol),cd,md->getBodyDef(),md->name(),n);
         ol.endMemberDocSpecifier();
@@ -325,23 +327,35 @@ static void writeTemplatePrefix(OutputList &ol,ArgumentList *al)
   Argument *a=al->first();
   while (a)
   {
+    ol.startMemberDocSpecifier();
     ol.docify(a->type);
-    ol.docify(" ");
-    ol.docify(a->name);
-    if (a->defval.length()!=0)
+    ol.endMemberDocSpecifier();
+    if (!a->name.isEmpty())
+    {
+      ol.docify(" ");
+      ol.startMemberDocIdentifier();
+      ol.docify(a->name);
+      ol.endMemberDocIdentifier();
+    }
+    if (!a->defval.isEmpty())
     {
       ol.startMemberDocPunctuation();
       ol.docify(" = ");
       ol.endMemberDocPunctuation();
+      ol.startMemberDocConstant();
       ol.docify(a->defval);
+      ol.endMemberDocConstant();
     } 
     a=al->next();
-    ol.startMemberDocPunctuation();
-    if (a) ol.docify(", ");
-    ol.endMemberDocPunctuation();
+    if (a)
+    {
+      ol.startMemberDocPunctuation();
+      ol.docify(", ");
+      ol.endMemberDocPunctuation();
+    }
   }
   ol.startMemberDocPunctuation();
-  ol.docify("> ");
+  ol.docify(">");
   ol.endMemberDocPunctuation();
 }
 
@@ -1489,9 +1503,13 @@ void MemberDef::writeDeclaration(OutputList &ol,
         //printf("writeLink %s->%d\n",name.data(),hasDocumentation());
         ClassDef *rcd = cd;
         if (isReference() && m_impl->classDef) rcd = m_impl->classDef;
-        ol.startMemberDocMethodName();
+        if (isFunction()) ol.startMemberDocMethodName();
+        else if (isVariable()) ol.startMemberDocConstant();
+        else ol.startMemberDocSpecifier();
         writeLink(ol,rcd,nd,fd,gd);
-        ol.endMemberDocMethodName();
+        if (isFunction()) ol.endMemberDocMethodName();
+        else if (isVariable()) ol.endMemberDocConstant();
+        else ol.endMemberDocSpecifier();
       }
     }
     else if (isDocumentedFriendClass())
@@ -1565,9 +1583,11 @@ void MemberDef::writeDeclaration(OutputList &ol,
         //printf("\n\n\n\ntype='%s' name='%s' defval='%s'\n\n\n\n", declArgType, declArgName, declArgDefVal);
         if (!declArgType.isEmpty())
         {
-          // Remove space before pointer operator
           int pp = declArgType.findRev(" *");
-          if (pp!=-1) declArgType.remove((uint)pp, 1);
+          if (pp!=-1) {
+            // Remove space before pointer operator
+            declArgType.remove(pp, 1);
+          }
 
           ol.startMemberDocSpecifier();
           linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgType,m_impl->annMemb,TRUE,FALSE,s_indentLevel);
@@ -1593,7 +1613,6 @@ void MemberDef::writeDeclaration(OutputList &ol,
           linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgDefVal);
           ol.endMemberDocConstant();
         }
-
         a=declArgList->next();
         if (a) {
           ol.startMemberDocPunctuation();
@@ -1676,18 +1695,29 @@ void MemberDef::writeDeclaration(OutputList &ol,
       ol.writeLatexSpacing();
       ol.startTypewriter();
       ol.writeNonBreakableSpace(1);
+      ol.startMemberDocPunctuation();
       ol.docify("[");
+      ol.endMemberDocPunctuation();
       QStrList sl;
-      if (isGettable())  sl.append("get");
-      if (isSettable())  sl.append("set");
+      if (isGettable()) sl.append("get");
+      if (isSettable()) sl.append("set");
       const char *s=sl.first();
       while (s)
       {
-         ol.docify(s);
-         s=sl.next();
-         if (s) ol.docify(", ");
+        ol.startMemberDocIdentifier();
+        ol.docify(s);
+        ol.endMemberDocIdentifier();
+        s=sl.next();
+        if (s)
+        {
+          ol.startMemberDocPunctuation();
+          ol.docify(", ");
+          ol.endMemberDocPunctuation();
+        }
       }
+      ol.startMemberDocPunctuation();
       ol.docify("]");
+      ol.endMemberDocPunctuation();
       ol.endTypewriter();
   }
 
@@ -1695,8 +1725,8 @@ void MemberDef::writeDeclaration(OutputList &ol,
   {
       ol.writeLatexSpacing();
       ol.startTypewriter();
-      ol.startMemberDocPunctuation();
       ol.writeNonBreakableSpace(1);
+      ol.startMemberDocPunctuation();
       ol.docify("[");
       ol.endMemberDocPunctuation();
       QStrList sl;
@@ -1901,8 +1931,12 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
 
   // get member name
   QCString doxyName=name();
-  // prepend scope if there is any. TODO: make this optional for C only docs
-  if (scopeName) doxyName.prepend((QCString)scopeName+"::");
+  if (scopeName &&
+      !Config_getBool("HIDE_SCOPE_NAMES") &&
+      !Config_getBool("OPTIMIZE_OUTPUT_FOR_C"))
+  {
+    doxyName.prepend((QCString)scopeName+"::");
+  }
   QCString doxyArgs=argsString();
 
   QCString ldef = definition();
@@ -1969,7 +2003,7 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
       // last ei characters of ldef contain pointer/reference specifiers
       int ni=ldef.find("::",si);
       if (ni>=ei) ei=ni+2;
-      linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.right(ldef.length()-ei));
+      linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.mid(ei));
     }
   }
   else // not an enum value
@@ -2069,14 +2103,10 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
       int ep = ldef.findRev(' ');
       if (ep!=-1)
       {
-        // Remove space before pointer operator
         if (ldef.mid(ep-2, 2)==" *")
         {
           ldef.remove((uint)ep-2, 1);
-          ep--;
         }
-        //Remove the space
-        ldef.remove((uint)ep, 1);
 
         ol.startMemberDocSpecifier();
         linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.left(ep));
@@ -2107,9 +2137,11 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     else
     {
       if (isFunction()) ol.startMemberDocMethodName();
+      else if (isVariable()) ol.startMemberDocConstant();
       else ol.startMemberDocSpecifier();
       linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef);
       if (isFunction()) ol.endMemberDocMethodName();
+      else if (isVariable()) ol.endMemberDocConstant();
       else ol.endMemberDocSpecifier();
       hasParameterList=writeDefArgumentList(ol,cd,scopeName,this);
     }
@@ -2121,12 +2153,16 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
         ol.startMemberDocPunctuation();
         ol.docify(" = "); 
         ol.endMemberDocPunctuation();
+        ol.startMemberDocConstant();
         linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),m_impl->initializer.simplifyWhiteSpace());
+        ol.endMemberDocConstant();
       }
       else 
       {
         //ol.writeNonBreakableSpace(3);
+        ol.startMemberDocConstant();
         linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),m_impl->initializer);
+        ol.endMemberDocConstant();
       }
     }
     if (excpString()) // add exception list
@@ -2234,8 +2270,8 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
   {
     ol.writeLatexSpacing();
     ol.startTypewriter();
-    ol.startMemberDocQualifier();
     ol.writeNonBreakableSpace(1);
+    ol.startMemberDocQualifier();
     ol.docify("[implementation]");
     ol.endMemberDocQualifier();
     ol.endTypewriter();
@@ -2336,7 +2372,6 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
     }
   }
 
-
   //printf("***** defArgList=%p name=%s docs=%s hasDocs=%d\n",
   //     defArgList, 
   //     defArgList?defArgList->hasDocumentation():-1);
@@ -2402,11 +2437,14 @@ void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
           ol.startDescTableTitle(); // this enables emphasis... not anymore!
           ol.startDoxyAnchor(cfname,cname,fmd->anchor(),fmd->name(),fmd->argsString());
           first=FALSE;
-          if (isFunction()) ol.startMemberDocParamName();
-          else ol.startTypewriter();
-          ol.docify(fmd->name());
-          if (isFunction()) ol.endMemberDocParamName();
-          else ol.endTypewriter();
+          if (!fmd->name().isEmpty())
+          {
+            if (isFunction()) ol.startMemberDocParamName();
+            else ol.startTypewriter();
+            ol.docify(fmd->name());
+            if (isFunction()) ol.endMemberDocParamName();
+            else ol.endTypewriter();
+          }
           ol.disableAllBut(OutputGenerator::Man);
           ol.writeString(" ");
           ol.enableAll();
