@@ -1642,8 +1642,8 @@ void MemberDef::writeDeclaration(OutputList &ol,
   if (isObjCMethod() && isImplementation())
   {
     ol.startTypewriter();
-    ol.startMemberDocQualifier();
     ol.writeNonBreakableSpace(1);
+    ol.startMemberDocQualifier();
     ol.docify("[implementation]");
     ol.endMemberDocQualifier();
     ol.endTypewriter();
@@ -1720,7 +1720,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
   //printf("endMember %s annoClassDef=%p annEnumType=%p\n",
   //    name().data(),annoClassDef,annEnumType);
   ol.endMemberItem();
-  if (endAnonScopeNeeded) 
+  if (endAnonScopeNeeded)
   {
     ol.endAnonTypeScope(--s_indentLevel);
   }
@@ -1735,7 +1735,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
     ol.parseDoc(briefFile(),briefLine(),
                 getOuterScope()?getOuterScope():d,this,briefDescription(),
                 TRUE,FALSE,0,TRUE,FALSE);
-    if (detailsVisible) 
+    if (detailsVisible)
     {
       ol.pushGeneratorState();
       ol.disableAllBut(OutputGenerator::Html);
@@ -1756,8 +1756,8 @@ void MemberDef::writeDeclaration(OutputList &ol,
     // for RTF we need to add an extra empty paragraph
     ol.pushGeneratorState();
     ol.disableAllBut(OutputGenerator::RTF);
-      ol.startParagraph();
-      ol.endParagraph();
+    ol.startParagraph();
+    ol.endParagraph();
     ol.popGeneratorState();
     ol.endMemberDescription();
   }
