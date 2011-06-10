@@ -2337,7 +2337,7 @@ void HtmlGenerator::startMemberDocFunctionName()
 {
   DBG_HTML(t << "<!-- startMemberDocFunctionName -->" << endl;)
 
-  t << "<span class=\"methodname\">";
+  t << "<span class=\"functionname\">";
 }
 
 void HtmlGenerator::endMemberDocFunctionName()

@@ -1461,10 +1461,12 @@ void MemberDef::writeDeclaration(OutputList &ol,
         ClassDef *rcd = cd;
         if (isReference() && m_impl->classDef) rcd = m_impl->classDef;
         if (isMethod()) ol.startMemberDocMethodName();
+        else if (isFunction()) ol.startMemberDocFunctionName();
         else if (isVariable()) ol.startMemberDocConstant();
         else ol.startMemberDocSpecifier();
         writeLink(ol,rcd,nd,fd,gd);
         if (isMethod()) ol.endMemberDocMethodName();
+        else if (isFunction()) ol.endMemberDocFunctionName();
         else if (isVariable()) ol.endMemberDocConstant();
         else ol.endMemberDocSpecifier();
       }
@@ -2078,10 +2080,12 @@ void MemberDef::writeDocumentation(MemberList *ml,
     else
     {
       if (isMethod()) ol.startMemberDocMethodName();
+      else if (isFunction()) ol.startMemberDocFunctionName();
       else if (isVariable()) ol.startMemberDocConstant();
       else ol.startMemberDocSpecifier();
       linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef);
       if (isMethod()) ol.endMemberDocMethodName();
+      else if (isFunction()) ol.endMemberDocFunctionName();
       else if (isVariable()) ol.endMemberDocConstant();
       else ol.endMemberDocSpecifier();
       hasParameterList=writeDefArgumentList(ol,cd,scopeName,this);
