@@ -6006,7 +6006,7 @@ static void findMember(EntryNav *rootNav,
             funcType="#define";
             funcArgs=mdDefine->argsString();
             funcDecl=funcType + " " + funcName;
-          } 
+          }
 
           //printf("New related name `%s' `%d'\n",funcName.data(),
           //    root->argList ? (int)root->argList->count() : -1);
@@ -6046,8 +6046,6 @@ static void findMember(EntryNav *rootNav,
           md->setDefinitionTemplateParameterLists(root->tArgLists);
 
           md->setTagInfo(rootNav->tagInfo());
-
-
 
           //printf("Related member name=`%s' decl=`%s' bodyLine=`%d'\n",
           //       funcName.data(),funcDecl.data(),root->bodyLine);

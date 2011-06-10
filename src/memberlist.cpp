@@ -521,7 +521,7 @@ void MemberList::writeDocumentation(OutputList &ol,
     ol.endGroupHeader(showInline ? 2 : 0);
   }
   ol.startMemberDocList();
-  
+
   MemberListIterator mli(*this);
   MemberDef *md;
   for ( ; (md=mli.current()) ; ++mli)
@@ -575,7 +575,6 @@ void MemberList::writeDocumentationPage(OutputList &ol,
     ol.writeString("    </td>\n");
     ol.writeString("  </tr>\n");
     ol.writeString("</table>\n");
-
 
     if (generateTreeView)
     {

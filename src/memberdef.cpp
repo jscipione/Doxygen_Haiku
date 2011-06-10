@@ -1887,7 +1887,8 @@ bool MemberDef::isDetailedSectionVisible(bool inGroup,bool inFile) const
 /*! Writes the "detailed documentation" section of this member to
  *  all active output formats.
  */
-void MemberDef::writeDocumentation(MemberList *ml,OutputList &ol,
+void MemberDef::writeDocumentation(MemberList *ml,
+                                   OutputList &ol,
                                    const char *scName,
                                    Definition *container,
                                    bool inGroup,
