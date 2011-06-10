@@ -127,6 +127,7 @@ class MemberDef : public Definition
     bool isEnumerate() const;
     bool isEnumValue() const;
     bool isTypedef() const;
+	bool isMethod() const;
     bool isFunction() const;
     bool isDefine() const;
     bool isFriend() const;

@@ -1460,11 +1460,11 @@ void MemberDef::writeDeclaration(OutputList &ol,
         //printf("writeLink %s->%d\n",name.data(),hasDocumentation());
         ClassDef *rcd = cd;
         if (isReference() && m_impl->classDef) rcd = m_impl->classDef;
-        if (isFunction()) ol.startMemberDocMethodName();
+        if (isMethod()) ol.startMemberDocMethodName();
         else if (isVariable()) ol.startMemberDocConstant();
         else ol.startMemberDocSpecifier();
         writeLink(ol,rcd,nd,fd,gd);
-        if (isFunction()) ol.endMemberDocMethodName();
+        if (isMethod()) ol.endMemberDocMethodName();
         else if (isVariable()) ol.endMemberDocConstant();
         else ol.endMemberDocSpecifier();
       }
@@ -1952,7 +1952,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
   else // not an enum value
   {
     QCString fname=name().copy();
-    if (isFunction()) fname.append("()");
+    if (isMethod() || isFunction()) fname.append("()");
     ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
     ol.startMemberDoc(ciname,fname,memAnchor,name(),showInline);
     ClassDef *cd=getClassDef();
@@ -2077,11 +2077,11 @@ void MemberDef::writeDocumentation(MemberList *ml,
     }
     else
     {
-      if (isFunction()) ol.startMemberDocMethodName();
+      if (isMethod()) ol.startMemberDocMethodName();
       else if (isVariable()) ol.startMemberDocConstant();
       else ol.startMemberDocSpecifier();
       linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef);
-      if (isFunction()) ol.endMemberDocMethodName();
+      if (isMethod()) ol.endMemberDocMethodName();
       else if (isVariable()) ol.endMemberDocConstant();
       else ol.endMemberDocSpecifier();
       hasParameterList=writeDefArgumentList(ol,cd,scopeName,this);
@@ -2372,10 +2372,10 @@ void MemberDef::writeDocumentation(MemberList *ml,
           first=FALSE;
           if (!fmd->name().isEmpty())
           {
-            if (isFunction()) ol.startMemberDocParamName();
+            if (isMethod()) ol.startMemberDocParamName();
             else ol.startTypewriter();
             ol.docify(fmd->name());
-            if (isFunction()) ol.endMemberDocParamName();
+            if (isMethod()) ol.endMemberDocParamName();
             else ol.endTypewriter();
           }
           ol.disableAllBut(OutputGenerator::Man);
@@ -2562,7 +2562,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
   writeInlineCode(ol,cname);
   // write call graph
   if ((m_impl->hasCallGraph || Config_getBool("CALL_GRAPH")) 
-      && (isFunction() || isSlot() || isSignal()) && Config_getBool("HAVE_DOT")
+      && (isMethod() || isFunction() || isSlot() || isSignal()) && Config_getBool("HAVE_DOT")
      )
   {
     DotCallGraph callGraph(this,FALSE);
@@ -2579,7 +2579,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
     }
   }
   if ((m_impl->hasCallerGraph || Config_getBool("CALLER_GRAPH")) 
-      && (isFunction() || isSlot() || isSignal()) && Config_getBool("HAVE_DOT")
+      && (isMethod() || isFunction() || isSlot() || isSignal()) && Config_getBool("HAVE_DOT")
      )
   {
     DotCallGraph callerGraph(this, TRUE);
@@ -2624,7 +2624,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
           "warning: parameters of member %s are not (all) documented",
           qPrint(qualifiedName()));
     }
-    if (!hasDocumentedReturnType() && isFunction() && hasDocumentation())
+    if (!hasDocumentedReturnType() && (isMethod() || isFunction()) && hasDocumentation())
     {
       warn_doc_error(docFile(),docLine(),
           "warning: return type of member %s is not documented",
@@ -3321,15 +3321,13 @@ void MemberDef::setInbodyDocumentation(const char *docs,
 bool MemberDef::isObjCMethod() const
 {
   makeResident();
-  if (m_impl->classDef && m_impl->classDef->isObjectiveC() && isFunction()) return TRUE;
-  return FALSE;
+  return m_impl->classDef && m_impl->classDef->isObjectiveC() && (isMethod() || isFunction());
 }
 
 bool MemberDef::isObjCProperty() const
 {
   makeResident();
-  if (m_impl->classDef && m_impl->classDef->isObjectiveC() && isProperty()) return TRUE;
-  return FALSE;
+  return m_impl->classDef && m_impl->classDef->isObjectiveC() && isProperty();
 }
 
 QCString MemberDef::qualifiedName() const
@@ -3549,10 +3547,16 @@ bool MemberDef::isTypedef() const
   return m_impl->mtype==Typedef;
 }
 
+bool MemberDef::isMethod() const
+{
+  makeResident();
+  return getClassDef() && m_impl->mtype==Function;
+}
+
 bool MemberDef::isFunction() const
 {
   makeResident();
-  return m_impl->mtype==Function;
+  return !getClassDef() && m_impl->mtype==Function;
 }
 
 bool MemberDef::isDefine() const
