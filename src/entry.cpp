@@ -39,7 +39,7 @@ bool ArgumentList::hasDocumentation() const
   Argument *a;
   for (ali.toFirst();!hasDocs && (a=ali.current());++ali)
   {
-    hasDocs = a->hasDocumentation(); 
+    hasDocs = a->hasDocumentation();
   }
   return hasDocs;
 }
@@ -160,7 +160,7 @@ Entry::Entry(const Entry &e)
   {
     m_sublist->append(new Entry(*cur));
   }
-  
+
   // deep copy base class list
   QListIterator<BaseInfo> bli(*e.extends);
   BaseInfo *bi;
@@ -168,7 +168,7 @@ Entry::Entry(const Entry &e)
   {
     extends->append(new BaseInfo(*bi));
   }
-  
+
   // deep copy group list
   QListIterator<Grouping> gli(*e.groups);
   Grouping *g;
@@ -176,7 +176,7 @@ Entry::Entry(const Entry &e)
   {
     groups->append(new Grouping(*g));
   }
-  
+
   QListIterator<SectionInfo> sli2(*e.anchors);
   SectionInfo *s;
   for (;(s=sli2.current());++sli2)
@@ -194,7 +194,7 @@ Entry::Entry(const Entry &e)
   argList->constSpecifier    = e.argList->constSpecifier;
   argList->volatileSpecifier = e.argList->volatileSpecifier;
   argList->pureSpecifier     = e.argList->pureSpecifier;
-  
+
   // deep copy type contraint list
   if (e.typeConstr)
   {
@@ -212,7 +212,6 @@ Entry::Entry(const Entry &e)
   {
     tArgLists = copyArgumentLists(e.tArgLists);
   }
-
 }
 
 Entry::~Entry()
@@ -242,7 +241,7 @@ void Entry::addSubEntry(Entry *current)
   //printf("Entry::addSubEntry(%s:%p) to %s\n",current->name.data(),
   //    current,name.data());
   current->m_parent=this;
-  m_sublist->append(current);  
+  m_sublist->append(current);
 }
 
 void Entry::reset()
@@ -301,7 +300,6 @@ void Entry::reset()
   if (typeConstr) { delete typeConstr; typeConstr=0; }
   //if (mtArgList) { delete mtArgList; mtArgList=0; }
 }
-
 
 int Entry::getSize()
 {
@@ -412,7 +410,7 @@ bool EntryNav::loadEntry(FileStorage *storage)
   {
     return TRUE;
   }
-  if (m_offset==-1) 
+  if (m_offset==-1)
   {
     //printf("offset not set!\n");
     return FALSE;
@@ -464,4 +462,3 @@ void EntryNav::setEntry(Entry *e)
   //printf("EntryNav::setEntry %p\n",e);
   m_noLoad=TRUE; 
 }
-

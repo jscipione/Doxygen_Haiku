@@ -63,6 +63,7 @@ struct Argument
 {
   /*! Construct a new argument. */
   Argument() {}
+
   /*! Copy an argument (does a deep copy of all strings). */
   Argument(const Argument &a)
   { 
@@ -73,6 +74,7 @@ struct Argument
     docs=a.docs.copy();
     array=a.array.copy();
   }
+
   /*! Assignment of an argument (does a deep copy of all strings). */
   Argument &operator=(const Argument &a)
   {
@@ -87,14 +89,15 @@ struct Argument
     }
     return *this;
   }
+
   /*! return TRUE if this argument is documentation and the argument has a
    *  non empty name.
    */
   bool hasDocumentation() const 
-  { 
+  {
     return !name.isEmpty() && !docs.isEmpty(); 
   }
-  
+
   QCString attrib;   /*!< Argument's attribute (IDL only) */
   QCString type;     /*!< Argument's type */
   QCString canType;  /*!< Cached value of canonical type (after type resolution). Empty initially. */
@@ -107,8 +110,8 @@ struct Argument
 /*! \brief This class represents an function or template argument list. 
  *
  *  This class also stores some information about member that is typically
- *  put after the argument list, such as wether the member is const, 
- *  volatile or pure virtual.
+ *  put after the argument list, such as whether the member is const, 
+ *  volatile, or pure virtual.
  */
 class ArgumentList : public QList<Argument> 
 {
@@ -329,7 +332,7 @@ class Entry
     QCString     bitfields;   //!< member's bit fields
     ArgumentList *argList;    //!< member arguments as a list
     QList<ArgumentList> *tArgLists; //!< template argument declarations
-    QGString	 program;     //!< the program text
+    QGString     program;     //!< the program text
     QGString     initializer; //!< initial value (for variables)
     QCString     includeFile; //!< include file (2 arg of \\class, must be unique)
     QCString     includeName; //!< include name (3 arg of \\class)
@@ -355,15 +358,15 @@ class Entry
     QList<BaseInfo> *extends; //!< list of base classes    
     QList<Grouping> *groups;  //!< list of groups this entry belongs to
     QList<SectionInfo> *anchors; //!< list of anchors defined in this entry
-    QCString	fileName;     //!< file this entry was extracted from
-    int		startLine;    //!< start line of entry in the source
+    QCString     fileName;     //!< file this entry was extracted from
+    int          startLine;    //!< start line of entry in the source
     QList<ListItemInfo> *sli; //!< special lists (test/todo/bug/deprecated/..) this entry is in
-    SrcLangExt  lang;         //!< programming language in which this entry was found
-    bool        hidden;       //!< does this represent an entity that is hidden from the output
-    bool        artificial;   //!< Artificially introduced item
+    SrcLangExt   lang;         //!< programming language in which this entry was found
+    bool         hidden;       //!< does this represent an entity that is hidden from the output
+    bool         artificial;   //!< Artificially introduced item
     GroupDocType groupDocType;
 
-    static int  num;          //!< counts the total number of entries
+    static int   num;          //!< counts the total number of entries
 
     /// return the command name used to define GROUPDOC_SEC
     const char *groupDocCmd() const
