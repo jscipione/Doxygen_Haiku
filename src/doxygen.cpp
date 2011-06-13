@@ -8265,19 +8265,20 @@ static void generateExampleDocs()
     endTitle(*g_outputList,n,0);
     g_outputList->startContents();
     g_outputList->parseDoc(pd->docFile(),                            // file
-                         pd->docLine(),                            // startLine
-                         pd,                                       // context
-                         0,                                        // memberDef
-                         pd->documentation()+"\n\n\\include "+pd->name(),          // docs
-                         TRUE,                                     // index words
-                         TRUE,                                     // is example
-                         pd->name()
-                        );
+                           pd->docLine(),                            // startLine
+                           pd,                                       // context
+                           0,                                        // memberDef
+                           pd->documentation()+"\n\n\\include "+pd->name(), // docs
+                           TRUE,                                     // index words
+                           TRUE,                                     // is example
+                           pd->name()
+                          );
     g_outputList->endContents();
     endFile(*g_outputList);
   }
   g_outputList->enable(OutputGenerator::Man);
 }
+
 
 //----------------------------------------------------------------------------
 // generate module pages

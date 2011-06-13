@@ -1004,7 +1004,6 @@ bool MemberDef::isLinkable() const
   }
 }
 
-
 void MemberDef::setDefinitionTemplateParameterLists(QList<ArgumentList> *lists)
 {
   if (lists)
@@ -1116,7 +1115,7 @@ ClassDef *MemberDef::getClassDefOfAnonymousType()
   m_impl->cachedAnonymousType = annoClassDef;
   return annoClassDef;
 }
-    
+
 /*! This methods returns TRUE iff the brief section (also known as
  *  declaration section) is visible in the documentation.
  */
@@ -1889,7 +1888,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
   QCString doxyArgs=argsString();
   QCString ldef = definition();
   //printf("member `%s' def=`%s'\n",name().data(),ldef.data());
-  if (isEnumerate()) 
+  if (isEnumerate())
   {
     if (name().at(0)=='@')
     {

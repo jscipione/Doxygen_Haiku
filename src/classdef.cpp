@@ -1907,7 +1907,7 @@ void ClassDef::writeDocumentation(OutputList &ol)
   static bool fortranOpt = Config_getBool("OPTIMIZE_FOR_FORTRAN");
   static bool vhdlOpt    = Config_getBool("OPTIMIZE_OUTPUT_VHDL");
   QCString pageTitle;
-    
+
   if (fortranOpt)
   {
     pageTitle = theTranslator->trCompoundReferenceFortran(displayName(),
@@ -1925,7 +1925,7 @@ void ClassDef::writeDocumentation(OutputList &ol)
               m_impl->compType == Interface && m_impl->lang==SrcLangExt_ObjC ? Class : m_impl->compType,
               m_impl->tempArgs != 0);
   }
-  
+
   startFile(ol,getOutputFileBase(),name(),pageTitle,HLI_ClassVisible,!generateTreeView);  
   if (!generateTreeView)
   {
@@ -1941,12 +1941,12 @@ void ClassDef::writeDocumentation(OutputList &ol)
   addGroupListToTitle(ol,this);
   endTitle(ol,getOutputFileBase(),displayName());
   writeDocumentationContents(ol,pageTitle);
-    
+
   if (generateTreeView)
   {
     writeNavigationPath(ol);
   }
- 
+
   endFile(ol,TRUE);
 
   if (Config_getBool("SEPARATE_MEMBER_PAGES"))
@@ -1963,7 +1963,7 @@ void ClassDef::writeMemberPages(OutputList &ol)
 
   ol.pushGeneratorState();
   ol.disableAllBut(OutputGenerator::Html);
-  
+
   QListIterator<MemberList> mli(m_impl->memberLists);
   MemberList *ml;
   for (mli.toFirst();(ml=mli.current());++mli)
