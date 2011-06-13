@@ -388,6 +388,10 @@ class OutputList : public OutputDocInterface
     { forall(&OutputGenerator::endTextBlock,paraBreak); }
     void lastIndexPage()
     { forall(&OutputGenerator::lastIndexPage); }
+    void startMemberDocProto()
+    { forall(&OutputGenerator::startMemberDocProto); }
+    void endMemberDocProto()
+    { forall(&OutputGenerator::endMemberDocProto); }
     void startMemberDocPrefixItem()
     { forall(&OutputGenerator::startMemberDocPrefixItem); }
     void endMemberDocPrefixItem()

@@ -49,7 +49,7 @@ struct SourceReference
 class MemberDef : public Definition
 {
   public:
-    
+
     enum MemberType { 
       Define,
       Function, 
@@ -74,7 +74,7 @@ class MemberDef : public Definition
     DefType definitionType() const        { return TypeMember; }
     // move this member into a different scope
     void moveTo(Definition *);
-    
+
     //-----------------------------------------------------------------------------------
     // ----  getters -----
     //-----------------------------------------------------------------------------------
@@ -93,13 +93,13 @@ class MemberDef : public Definition
     const char *extraTypeChars() const;
     const QCString &initializer() const;
     int initializerLines() const;
-    int  getMemberSpecifiers() const;
+    int getMemberSpecifiers() const;
     MemberList *getSectionList(Definition *d) const;
 
     // scope query members
-    ClassDef *getClassDef() const;
-    FileDef  *getFileDef() const;
-    NamespaceDef* getNamespaceDef() const;
+    ClassDef     *getClassDef() const;
+    FileDef      *getFileDef() const;
+    NamespaceDef *getNamespaceDef() const;
 
     // grabbing the property read/write accessor names
     const char *getReadAccessor() const;
@@ -350,6 +350,13 @@ class MemberDef : public Definition
                             const char *scopeName,Definition *container,
                             bool inGroup,bool showEnumValues=FALSE,bool
                             showInline=FALSE);
+    void writeFunctionDeclDocumentation(OutputList &ol,
+                                        const char *scName,
+                                        Definition *container
+                                       );
+    void writeFunctionDocumentation(OutputList &ol);
+    void writeTemplatePrefixDocumentation(OutputList &ol,ClassDef *cd);
+    QCString writeSpecifierDocumentation(OutputList &ol,ClassDef *cd,Definition *container,QCString ldef);
     void warnIfUndocumented();
     
     MemberDef *createTemplateInstanceMember(ArgumentList *formalArgs,
@@ -359,9 +366,9 @@ class MemberDef : public Definition
             ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd);
 
     void findSectionsInDocumentation();
-    
+
     bool visited;
-   
+
   protected:
     void flushToDisk() const;
     void loadFromDisk() const;

@@ -4798,10 +4798,8 @@ static void addMemberDocs(EntryNav *rootNav,
   ClassDef     *cd=md->getClassDef();
   NamespaceDef *nd=md->getNamespaceDef();
   QCString fullName;
-  if (cd) 
-    fullName = cd->name();
-  else if (nd) 
-    fullName = nd->name();
+  if (cd) fullName = cd->name();
+  else if (nd) fullName = nd->name();
 
   if (!fullName.isEmpty()) fullName+="::";
   fullName+=md->name();
@@ -4818,12 +4816,10 @@ static void addMemberDocs(EntryNav *rootNav,
   }
   else
   {
-    if ( 
-          matchArguments2( md->getOuterScope(), md->getFileDef(), mdAl.pointer(),
-                           rscope,rfd,root->argList,
-                           TRUE
-                         )
-       ) 
+    if (matchArguments2(md->getOuterScope(),md->getFileDef(),mdAl.pointer(),
+                        rscope,rfd,root->argList,TRUE
+                       )
+       )
     {
       //printf("merging arguments (2)\n");
       mergeArguments(mdAl.pointer(),root->argList,!root->doc.isEmpty());
@@ -5876,8 +5872,8 @@ static void findMember(EntryNav *rootNav,
           if      (root->mtype==Signal)  mtype=MemberDef::Signal;
           else if (root->mtype==Slot)    mtype=MemberDef::Slot;
           else if (root->mtype==DCOP)    mtype=MemberDef::DCOP;
-          else                 mtype=MemberDef::Function;
-          
+          else                           mtype=MemberDef::Function;
+
           // new overloaded member function
           ArgumentList *tArgList = 
             getTemplateArgumentsFromName(cd->name()+"::"+funcName,root->tArgLists);

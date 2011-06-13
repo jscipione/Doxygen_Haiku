@@ -391,6 +391,8 @@ class OutputGenerator : public BaseOutputDocInterface
     virtual void startTextBlock(bool) = 0;
     virtual void endTextBlock(bool) = 0;
     virtual void lastIndexPage() = 0;
+    virtual void startMemberDocProto() = 0;
+    virtual void endMemberDocProto() = 0;
     virtual void startMemberDocPrefixItem() = 0;
     virtual void endMemberDocPrefixItem() = 0;
     virtual void startMemberDocName(bool) = 0;

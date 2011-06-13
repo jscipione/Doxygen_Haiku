@@ -219,6 +219,8 @@ class LatexGenerator : public OutputGenerator
     void startTextBlock(bool) {}
     void endTextBlock(bool) {}
 
+    void startMemberDocProto() {}
+    void endMemberDocProto() {}
     void startMemberDocPrefixItem() {}
     void endMemberDocPrefixItem() {}
     void startMemberDocName(bool) {}

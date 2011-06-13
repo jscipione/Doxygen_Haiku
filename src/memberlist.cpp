@@ -523,11 +523,97 @@ void MemberList::writeDocumentation(OutputList &ol,
   ol.startMemberDocList();
 
   MemberListIterator mli(*this);
+  MemberListIterator mlj(*this);
   MemberDef *md;
-  for ( ; (md=mli.current()) ; ++mli)
+  QCString cur_name;
+  QCString next_name;
+  for (mli.toFirst(); (md=mli.current()); ++mli)
   {
-    md->writeDocumentation(this,ol,scopeName,container,
-                           m_inGroup,showEnumValues,showInline);
+    cur_name = md->name();
+    mlj = mli;
+    do {
+      ++mlj;
+      md=mlj.current();
+      if (md) next_name = md->name();
+    } while (md && next_name == cur_name);
+    md=mli.current();
+    if (mlj>mli && (md->isMethod() || md->isFunction()))
+    { // write overloaded functions all together
+      // if this member is in a group find the real scope name.
+      QCString scName = scopeName;
+      QCString memAnchor = md->anchor();
+      QCString ciname = container->name();
+      if (container->definitionType()==md->TypeGroup)
+      {
+        if (md->getClassDef())          scName=md->getClassDef()->name();
+        else if (md->getNamespaceDef()) scName=md->getNamespaceDef()->name();
+        else if (md->getFileDef())      scName=md->getFileDef()->name();
+        ciname = ((GroupDef *)container)->groupTitle();
+      }
+      else if (container->definitionType()==md->TypeFile && md->getNamespaceDef())
+      { // member is in a namespace, but is written as part of the file documentation
+        // as well, so we need to make sure its label is unique.
+        memAnchor.prepend("file_");
+      }
+
+      QCString cname  = container->name();
+      QCString cfname = md->getOutputFileBase();
+      QCString cfiname = container->getOutputFileBase();
+      // get member name
+      QCString doxyName=md->name();
+      if (scName &&
+          !Config_getBool("HIDE_SCOPE_NAMES") &&
+          !Config_getBool("OPTIMIZE_OUTPUT_FOR_C"))
+      {
+        doxyName.prepend((QCString)scName+"::");
+      }
+      QCString doxyArgs=md->argsString();
+
+      ol.pushGeneratorState();
+      // get member name
+      if (scName &&
+          !Config_getBool("HIDE_SCOPE_NAMES") &&
+          !Config_getBool("OPTIMIZE_OUTPUT_FOR_C"))
+      {
+        doxyName.prepend((QCString)scName+"::");
+      }
+
+      // write the function name out (with an innertube added)
+      QCString fname=md->name().copy();
+      fname.append("()");
+      ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
+      ol.startMemberDoc(ciname,fname,memAnchor,md->name(),showInline);
+      fname.resize(0);
+
+      while (mli<mlj)
+      {
+        md->writeFunctionDeclDocumentation(ol,scopeName,container);
+        ++mli;
+        md=mli.current();
+      }
+
+      ol.endMemberDoc(TRUE);
+      ol.endDoxyAnchor(cfname,memAnchor);
+
+      mli=mlj;
+      md=mli.current();
+
+      while (mli<mlj)
+      {
+        md->writeFunctionDocumentation(ol);
+        ++mli;
+        md=mli.current();
+      }
+
+      ol.endMemberDocProto();
+
+      ol.popGeneratorState();
+    }
+    else
+    {
+      md->writeDocumentation(this,ol,scopeName,container,
+                             m_inGroup,showEnumValues,showInline);
+    }
   }
   if (memberGroupList)
   {
@@ -569,7 +655,7 @@ void MemberList::writeDocumentationPage(OutputList &ol,
 
     ol.writeString("   </td>\n");
     ol.writeString("   <td valign=\"top\" class=\"mempage\">\n");
-    
+
     md->writeDocumentation(this,ol,scopeName,container,m_inGroup);
 
     ol.writeString("    </td>\n");

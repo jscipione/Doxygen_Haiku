@@ -2262,6 +2262,20 @@ void HtmlGenerator::startMemberDoc(const char *,const char *name,const char *,co
   t << "  <div class=\"memproto\">" << endl;
 }
 
+void HtmlGenerator::startMemberDocProto()
+{
+  DBG_HTML(t << "<!-- startMemberDocProto -->" << endl;)
+
+  t << "  <div class=\"memproto\">" << endl;
+}
+
+void HtmlGenerator::endMemberDocProto()
+{
+  DBG_HTML(t << "<!-- endMemberDocProto -->" << endl;)
+
+  t << "  </div>" << endl;
+}
+
 void HtmlGenerator::startMemberDocPrefixItem()
 {
   DBG_HTML(t << "<!-- startMemberDocPrefixItem -->" << endl;)

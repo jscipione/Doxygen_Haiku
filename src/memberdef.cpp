@@ -2637,6 +2637,289 @@ void MemberDef::writeDocumentation(MemberList *ml,
 
 }
 
+/*! Writes the "detailed documentation" section of this member to
+ *  all active output formats for methods.
+ */
+void MemberDef::writeFunctionDeclDocumentation(OutputList &ol,
+                                               const char *scName,
+                                               Definition *container
+                                              )
+{
+  QCString scopeName = scName;
+  if (container->definitionType()==TypeGroup)
+  {
+    if (getClassDef())          scopeName=getClassDef()->name();
+    else if (getNamespaceDef()) scopeName=getNamespaceDef()->name();
+    else if (getFileDef())      scopeName=getFileDef()->name();
+  }
+  bool hasParameterList=false;
+  QCString ldef = definition();
+
+  // start member doc name section
+  ol.startMemberDocName(isObjCMethod());
+
+  // write template prefix
+  ClassDef *cd=getClassDef();
+  writeTemplatePrefixDocumentation(ol,cd);
+
+  // write the function return value
+  ldef = writeSpecifierDocumentation(ol, cd, container, ldef);
+
+  // write function name and argument list
+  if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
+  {
+    VhdlDocGen::writeVHDLTypeDocumentation(this,container,ol);
+  }
+  else
+  {
+    if (isMethod()) ol.startMemberDocMethodName();
+    else if (isFunction()) ol.startMemberDocFunctionName();
+    linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef);
+    if (isMethod()) ol.endMemberDocMethodName();
+    else if (isFunction()) ol.endMemberDocFunctionName();
+    hasParameterList=writeDefArgumentList(ol,cd,scopeName,this);
+  }
+
+  Specifier lvirt=virtualness();
+  if ((!isObjCMethod() || isOptional() || isRequired()) &&
+      (protection()!=Public || lvirt!=Normal ||
+       isFriend() || isRelated() || 
+       (isInline() && Config_getBool("INLINE_INFO")) ||
+       isSignal() || isSlot() ||
+       isStatic() || 
+       (m_impl->classDef && m_impl->classDef!=container && container->definitionType()==TypeClass) ||
+       (m_impl->memSpec & ~Entry::Inline)!=0 
+      )
+     )
+  {
+    // write the member specifier list
+    ol.writeLatexSpacing();
+    ol.startTypewriter();
+    ol.writeNonBreakableSpace(1);
+    ol.startMemberDocPunctuation();
+    ol.docify("[");
+    ol.endMemberDocPunctuation();
+    QStrList sl;
+    if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
+    {
+      sl.append(VhdlDocGen::trTypeString(getMemberSpecifiers()));
+    }
+    else
+    {
+      if (isFriend()) sl.append("friend");
+      else if (isRelated()) sl.append("related");
+      else
+      {
+        if      (Config_getBool("INLINE_INFO") && isInline()) sl.append("inline");
+        if      (isExplicit())            sl.append("explicit");
+        if      (isMutable())             sl.append("mutable");
+        if      (isStatic())              sl.append("static");
+        if      (isGettable())            sl.append("get");
+        if      (isSettable())            sl.append("set");
+        if      (isAddable())             sl.append("add");
+        if      (isRemovable())           sl.append("remove");
+        if      (isRaisable())            sl.append("raise");
+        if      (isReadable())            sl.append("read");
+        if      (isWritable())            sl.append("write");
+        if      (isFinal())               sl.append("final");
+        if      (isAbstract())            sl.append("abstract");
+        if      (isOverride())            sl.append("override");
+        if      (isInitonly())            sl.append("initonly");
+        if      (isSealed())              sl.append("sealed");
+        if      (isNew())                 sl.append("new");
+        if      (isOptional())            sl.append("optional");
+        if      (isRequired())            sl.append("required");
+        if      (isAssign())              sl.append("assign");
+        else if (isCopy())                sl.append("copy");
+        else if (isRetain())              sl.append("retain");
+        if (!isObjCMethod())
+        {
+          if      (protection()==Protected) sl.append("protected");
+          else if (protection()==Private)   sl.append("private");
+          else if (protection()==Package)   sl.append("package");
+          if      (lvirt==Virtual)          sl.append("virtual");
+          else if (lvirt==Pure)             sl.append("pure virtual");
+          if      (isSignal())              sl.append("signal");
+          if      (isSlot())                sl.append("slot");
+        }
+      }
+      if (m_impl->classDef && 
+          container->definitionType()==TypeClass && 
+          m_impl->classDef!=container &&
+          !isRelated()
+         )
+      {
+        sl.append("inherited");
+      }
+    }
+    const char *s=sl.first();
+    while (s)
+    {
+      ol.startMemberDocQualifier();
+      ol.docify(s);
+      ol.endMemberDocQualifier();
+      s=sl.next();
+      if (s)
+      {
+        ol.startMemberDocPunctuation();
+        ol.docify(", ");
+        ol.endMemberDocPunctuation();
+      }
+    }
+    ol.startMemberDocPunctuation();
+    ol.docify("]");
+    ol.endMemberDocPunctuation();
+    ol.endTypewriter();
+  }
+  else if (isObjCMethod() && isImplementation())
+  {
+    ol.writeLatexSpacing();
+    ol.startTypewriter();
+    ol.writeNonBreakableSpace(1);
+    ol.startMemberDocQualifier();
+    ol.docify("[implementation]");
+    ol.endMemberDocQualifier();
+    ol.endTypewriter();
+  }
+  if (hasParameterList) 
+  {
+    ol.endParameterList();
+  }
+  else
+  {
+    ol.endMemberDocName();
+    ol.endMemberDoc(FALSE);
+  }
+}
+
+void MemberDef::writeFunctionDocumentation(OutputList &ol)
+{
+  ol.startIndent();
+  ol.endIndent();
+}
+
+void MemberDef::writeTemplatePrefixDocumentation(OutputList &ol,ClassDef *cd)
+{
+  if (!Config_getBool("HIDE_SCOPE_NAMES"))
+  {
+    bool first=TRUE;
+    if (m_impl->defTmpArgLists)
+      // definition has explicit template parameter declarations
+    {
+      QListIterator<ArgumentList> ali(*m_impl->defTmpArgLists);
+      ArgumentList *tal;
+      for (ali.toFirst();(tal=ali.current());++ali)
+      {
+        if (tal->count()>0)
+        {
+          if (!first) ol.writeNonBreakableSpace(1);
+          ol.startMemberDocPrefixItem();
+          writeTemplatePrefix(ol,tal);
+          ol.endMemberDocPrefixItem();
+        }
+      }
+    }
+    else // definition gets it template parameters from its class
+         // (since no definition was found)
+    {
+      if (cd && !isTemplateSpecialization())
+      {
+        QList<ArgumentList> tempParamLists;
+        cd->getTemplateParameterLists(tempParamLists);
+        //printf("#tempParamLists=%d\n",tempParamLists.count());
+        QListIterator<ArgumentList> ali(tempParamLists);
+        ArgumentList *tal;
+        for (ali.toFirst();(tal=ali.current());++ali)
+        {
+          if (tal->count()>0)
+          {
+            if (!first) ol.writeNonBreakableSpace(1);
+            ol.startMemberDocPrefixItem();
+            writeTemplatePrefix(ol,tal);
+            ol.endMemberDocPrefixItem();
+          }
+        }
+      }
+      if (m_impl->tArgList) // function template prefix
+      {
+        ol.startMemberDocPrefixItem();
+        writeTemplatePrefix(ol,m_impl->tArgList);
+        ol.endMemberDocPrefixItem();
+      }
+    }
+  }
+}
+
+QCString MemberDef::writeSpecifierDocumentation(OutputList &ol,ClassDef *cd,Definition *container,QCString ldef)
+{
+  if (cd && cd->isObjectiveC())
+  {
+    // strip scope name
+    int ep = ldef.find("::");
+    if (ep!=-1)
+    {
+      int sp=ldef.findRev(' ',ep);
+      if (sp!=-1)
+      {
+        ldef=ldef.left(sp+1)+ldef.mid(ep+2);
+      }
+    }
+    // strip keywords
+    int dp = ldef.find(':');
+    if (dp!=-1)
+    {
+      ldef=ldef.left(dp+1);
+    }
+    int l=ldef.length();
+    //printf("start >%s<\n",ldef.data());
+    int i=l-1;
+    while (i>=0 && (isId(ldef.at(i)) || ldef.at(i)==':')) i--;
+    while (i>=0 && isspace((uchar)ldef.at(i))) i--;
+    if (i>0)
+    {
+      // insert parens around the type
+      QCString tmp("("+ldef.left(i+1)+")"+ldef.mid(i+1));
+      ldef=tmp;
+    }
+    //printf("end   >%s< i=%d\n",ldef.data(),i);
+    if (isStatic()) ldef.prepend("+ "); else ldef.prepend("- ");
+  }
+  else
+  {
+    // Put a span around the type specifier or return value
+    int ep = ldef.findRev(' ');
+    if (ep!=-1)
+    {
+      if (ldef.mid(ep-2, 2)==" *")
+      {
+        ldef.remove((uint)ep-2, 1);
+      }
+
+      ol.startMemberDocSpecifier();
+      linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.left(ep));
+      ol.endMemberDocSpecifier();
+      ol.docify(" ");
+      ldef.remove(0, (uint)ep);
+    }
+    if (!Config_getBool("HIDE_SCOPE_NAMES")) {
+      // Put a span around the class or namespace name and :: operator
+      ep = ldef.findRev("::");
+      if (ep!=-1) {
+        ldef.remove((uint)ep, 2);
+        ol.startMemberDocClassName();
+        linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.left((uint)ep));
+        ol.endMemberDocClassName();
+        ol.startMemberDocPunctuation();
+        ol.docify("::");
+        ol.endMemberDocPunctuation();
+        ldef.remove(0, (uint)ep);
+      }
+    }
+  }
+
+  return ldef;
+}
+
 QCString MemberDef::memberTypeName() const
 {
   makeResident();

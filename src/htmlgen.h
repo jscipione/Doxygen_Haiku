@@ -234,6 +234,8 @@ class HtmlGenerator : public OutputGenerator
     { t << "</div>"; }
     void lastIndexPage() {}
 
+    void startMemberDocProto();
+    void endMemberDocProto();
     void startMemberDocPrefixItem();
     void endMemberDocPrefixItem();
     void startMemberDocName(bool);

@@ -212,6 +212,8 @@ class ManGenerator : public OutputGenerator
     void endTextBlock(bool) {}
     void lastIndexPage() {}
 
+    void startMemberDocProto() {}
+    void endMemberDocProto() {}
     void startMemberDocPrefixItem() {}
     void endMemberDocPrefixItem() {}
     void startMemberDocName(bool) {}
