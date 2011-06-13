@@ -524,6 +524,7 @@ void MemberList::writeDocumentation(OutputList &ol,
 
   MemberListIterator mli(*this);
   MemberListIterator mlj(*this);
+  MemberListIterator mlk(*this);
   MemberDef *md;
   QCString cur_name;
   QCString next_name;
@@ -531,11 +532,13 @@ void MemberList::writeDocumentation(OutputList &ol,
   {
     cur_name = md->name();
     mlj = mli;
+    mlk = mli;
     do {
       ++mlj;
       md=mlj.current();
       if (md) next_name = md->name();
     } while (md && next_name == cur_name);
+    --mlj;
     md=mli.current();
     if (mlj>mli && (md->isMethod() || md->isFunction()))
     { // write overloaded functions all together
@@ -581,31 +584,31 @@ void MemberList::writeDocumentation(OutputList &ol,
       // write the function name out (with an innertube added)
       QCString fname=md->name().copy();
       fname.append("()");
-      ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
       ol.startMemberDoc(ciname,fname,memAnchor,md->name(),showInline);
       fname.resize(0);
 
-      while (mli<mlj)
+      while (mli<=mlj)
       {
+        ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
         md->writeFunctionDeclDocumentation(ol,scopeName,container);
+        ol.endDoxyAnchor(cfname,memAnchor);
         ++mli;
         md=mli.current();
       }
 
       ol.endMemberDoc(TRUE);
-      ol.endDoxyAnchor(cfname,memAnchor);
 
-      mli=mlj;
+      --mli;
       md=mli.current();
 
-      while (mli<mlj)
+      /*while (mli<=mlj)
       {
         md->writeFunctionDocumentation(ol);
         ++mli;
         md=mli.current();
-      }
+      }*/
 
-      ol.endMemberDocProto();
+      //ol.endMemberDocProto();
 
       ol.popGeneratorState();
     }
