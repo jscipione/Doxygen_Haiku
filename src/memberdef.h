@@ -345,20 +345,30 @@ class MemberDef : public Definition
     // output generation
     void writeDeclaration(OutputList &ol,
                    ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd,
-                   bool inGroup); 
+                   bool inGroup);
     void writeDocumentation(MemberList *ml,OutputList &ol,
                             const char *scopeName,Definition *container,
                             bool inGroup,bool showEnumValues=FALSE,bool
                             showInline=FALSE);
+    void writeFunctionHeaderDocumentation(OutputList &ol,
+                                          const char *scName,
+                                          Definition *container,
+                                          bool showInline
+                                         );
     void writeFunctionProtoDocumentation(OutputList &ol,
                                          const char *scName,
                                          Definition *container
                                         );
-    void writeFunctionDocumentation(OutputList &ol);
+    void writeBodyDocumentation(OutputList &ol,
+                                const char *scName,
+                                Definition *container,
+                                int num
+                               );
     void writeTemplatePrefixDocumentation(OutputList &ol,ClassDef *cd);
     QCString writeSpecifierDocumentation(OutputList &ol,ClassDef *cd,Definition *container,QCString ldef);
     void warnIfUndocumented();
-    
+    QCString getScopeName(const char *scName, Definition *container);
+    QCString getMemAnchor(Definition *container);
     MemberDef *createTemplateInstanceMember(ArgumentList *formalArgs,
                ArgumentList *actualArgs);
 

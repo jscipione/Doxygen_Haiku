@@ -1851,29 +1851,21 @@ void MemberDef::writeDocumentation(MemberList *ml,
   bool hasParameterList = FALSE;
   bool inFile = container->definitionType()==Definition::TypeFile;
   bool hasDocs = isDetailedSectionVisible(inGroup,inFile);
-  static bool optVhdl          = Config_getBool("OPTIMIZE_OUTPUT_VHDL");
   //printf("MemberDef::writeDocumentation(): name=`%s' hasDocs=`%d' containerType=%d inGroup=%d\n",
   //    name().data(),hasDocs,container->definitionType(),inGroup);
   if (!hasDocs) return;
   if (isEnumValue() && !showEnumValues) return;
   makeResident();
   LockingPtr<MemberDef> lock(this,this);
-  QCString scopeName = scName;
+  QCString scopeName = getScopeName(scName,container);
   QCString memAnchor = anchor();
-  QCString ciname = container->name();
-  if (container->definitionType()==TypeGroup)
-  {
-    if (getClassDef())          scopeName=getClassDef()->name();
-    else if (getNamespaceDef()) scopeName=getNamespaceDef()->name();
-    else if (getFileDef())      scopeName=getFileDef()->name();
-    ciname = ((GroupDef *)container)->groupTitle();
-  }
-  else if (container->definitionType()==TypeFile && getNamespaceDef())
+  if (container->definitionType()==TypeFile && getNamespaceDef())
   { // member is in a namespace, but is written as part of the file documentation
     // as well, so we need to make sure its label is unique.
     memAnchor.prepend("file_");
   }
 
+  QCString ciname = container->name();
   QCString cname  = container->name();
   QCString cfname = getOutputFileBase();
   QCString cfiname = container->getOutputFileBase();
@@ -2077,7 +2069,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
       }
     }
 
-    if (optVhdl)
+    if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
     {
       VhdlDocGen::writeVHDLTypeDocumentation(this,container,ol);
     }
@@ -2141,7 +2133,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
     ol.docify("[");
     ol.endMemberDocPunctuation();
     QStrList sl;
-    if (optVhdl)
+    if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
     {
       sl.append(VhdlDocGen::trTypeString(getMemberSpecifiers()));
     }
@@ -2233,9 +2225,217 @@ void MemberDef::writeDocumentation(MemberList *ml,
 
   ol.endMemberDocTable(hasParameterList);
   ol.endMemberDocProto();
-  ol.endMemberDoc(hasParameterList);
-
   ol.endDoxyAnchor(cfname,memAnchor);
+
+  writeBodyDocumentation(ol,scName,container,0);
+
+  ol.endMemberDoc(hasParameterList);
+}
+
+void MemberDef::writeFunctionHeaderDocumentation(OutputList &ol,
+                                                 const char *scName,
+                                                 Definition *container,
+                                                 bool showInline
+                                                )
+{
+  QCString scopeName = getScopeName(scName,container);
+  QCString memAnchor = getMemAnchor(container);
+  QCString ciname = container->name();
+  if (container->definitionType()==TypeGroup)
+    ciname = ((GroupDef *)container)->groupTitle();
+
+  QCString cname  = container->name();
+  QCString cfname = getOutputFileBase();
+  QCString cfiname = container->getOutputFileBase();
+  // get member name
+  QCString doxyName=name();
+  if (scopeName &&
+      !Config_getBool("HIDE_SCOPE_NAMES") &&
+      !Config_getBool("OPTIMIZE_OUTPUT_FOR_C"))
+  {
+    doxyName.prepend((QCString)scopeName+"::");
+  }
+  QCString doxyArgs=argsString();
+
+  ol.pushGeneratorState();
+  // get member name
+  if (scopeName &&
+      !Config_getBool("HIDE_SCOPE_NAMES") &&
+      !Config_getBool("OPTIMIZE_OUTPUT_FOR_C"))
+  {
+    doxyName.prepend((QCString)scopeName+"::");
+  }
+
+  // write the function name out (with an innertube added)
+  QCString fname=name().copy();
+  fname.append("()");
+  ol.startMemberDoc(ciname,fname,memAnchor,name(),showInline);
+  ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
+  fname.resize(0);
+}
+
+void MemberDef::writeFunctionProtoDocumentation(OutputList &ol,
+                                               const char *scName,
+                                               Definition *container
+                                              )
+{
+  QCString scopeName = getScopeName(scName,container);
+  bool hasParameterList=false;
+  QCString ldef = definition();
+
+  ol.startMemberDocTable();
+
+  // start member doc name section
+  ol.startMemberDocName(isObjCMethod());
+
+  // write template prefix
+  ClassDef *cd=getClassDef();
+  writeTemplatePrefixDocumentation(ol,cd);
+
+  // write the function return value
+  ldef = writeSpecifierDocumentation(ol, cd, container, ldef);
+
+  // write function name and argument list
+  if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
+  {
+    VhdlDocGen::writeVHDLTypeDocumentation(this,container,ol);
+  }
+  else
+  {
+    if (isMethod()) ol.startMemberDocMethodName();
+    else if (isFunction()) ol.startMemberDocFunctionName();
+    linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef);
+    if (isMethod()) ol.endMemberDocMethodName();
+    else if (isFunction()) ol.endMemberDocFunctionName();
+    hasParameterList=writeDefArgumentList(ol,cd,scopeName,this);
+  }
+
+  Specifier lvirt=virtualness();
+  if ((!isObjCMethod() || isOptional() || isRequired()) &&
+      (protection()!=Public || lvirt!=Normal ||
+       isFriend() || isRelated() || 
+       (isInline() && Config_getBool("INLINE_INFO")) ||
+       isSignal() || isSlot() ||
+       isStatic() || 
+       (m_impl->classDef && m_impl->classDef!=container && container->definitionType()==TypeClass) ||
+       (m_impl->memSpec & ~Entry::Inline)!=0 
+      )
+     )
+  {
+    // write the member specifier list
+    ol.writeLatexSpacing();
+    ol.startTypewriter();
+    ol.writeNonBreakableSpace(1);
+    ol.startMemberDocPunctuation();
+    ol.docify("[");
+    ol.endMemberDocPunctuation();
+    QStrList sl;
+    if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
+    {
+      sl.append(VhdlDocGen::trTypeString(getMemberSpecifiers()));
+    }
+    else
+    {
+      if (isFriend()) sl.append("friend");
+      else if (isRelated()) sl.append("related");
+      else
+      {
+        if      (Config_getBool("INLINE_INFO") && isInline()) sl.append("inline");
+        if      (isExplicit())            sl.append("explicit");
+        if      (isMutable())             sl.append("mutable");
+        if      (isStatic())              sl.append("static");
+        if      (isGettable())            sl.append("get");
+        if      (isSettable())            sl.append("set");
+        if      (isAddable())             sl.append("add");
+        if      (isRemovable())           sl.append("remove");
+        if      (isRaisable())            sl.append("raise");
+        if      (isReadable())            sl.append("read");
+        if      (isWritable())            sl.append("write");
+        if      (isFinal())               sl.append("final");
+        if      (isAbstract())            sl.append("abstract");
+        if      (isOverride())            sl.append("override");
+        if      (isInitonly())            sl.append("initonly");
+        if      (isSealed())              sl.append("sealed");
+        if      (isNew())                 sl.append("new");
+        if      (isOptional())            sl.append("optional");
+        if      (isRequired())            sl.append("required");
+        if      (isAssign())              sl.append("assign");
+        else if (isCopy())                sl.append("copy");
+        else if (isRetain())              sl.append("retain");
+        if (!isObjCMethod())
+        {
+          if      (protection()==Protected) sl.append("protected");
+          else if (protection()==Private)   sl.append("private");
+          else if (protection()==Package)   sl.append("package");
+          if      (lvirt==Virtual)          sl.append("virtual");
+          else if (lvirt==Pure)             sl.append("pure virtual");
+          if      (isSignal())              sl.append("signal");
+          if      (isSlot())                sl.append("slot");
+        }
+      }
+      if (m_impl->classDef && 
+          container->definitionType()==TypeClass && 
+          m_impl->classDef!=container &&
+          !isRelated()
+         )
+      {
+        sl.append("inherited");
+      }
+    }
+    const char *s=sl.first();
+    while (s)
+    {
+      ol.startMemberDocQualifier();
+      ol.docify(s);
+      ol.endMemberDocQualifier();
+      s=sl.next();
+      if (s)
+      {
+        ol.startMemberDocPunctuation();
+        ol.docify(", ");
+        ol.endMemberDocPunctuation();
+      }
+    }
+    ol.startMemberDocPunctuation();
+    ol.docify("]");
+    ol.endMemberDocPunctuation();
+    ol.endTypewriter();
+  }
+  else if (isObjCMethod() && isImplementation())
+  {
+    ol.writeLatexSpacing();
+    ol.startTypewriter();
+    ol.writeNonBreakableSpace(1);
+    ol.startMemberDocQualifier();
+    ol.docify("[implementation]");
+    ol.endMemberDocQualifier();
+    ol.endTypewriter();
+  }
+  if (hasParameterList) 
+  {
+    ol.endParameterList();
+  }
+  else
+  {
+    ol.endMemberDocName();
+  }
+
+  ol.endMemberDocTable(TRUE);
+  ol.endDoxyAnchor(getOutputFileBase(),getMemAnchor(container));
+}
+
+void MemberDef::writeBodyDocumentation(OutputList &ol,
+                                       const char *scName,
+                                       Definition *container,
+                                       int num
+                                      )
+{
+  QCString scopeName = getScopeName(scName,container);
+  QCString ciname = container->name();
+  QCString cname  = container->name();
+  QCString cfname = getOutputFileBase();
+  QCString cfiname = container->getOutputFileBase();
+
   ol.startIndent();
   // FIXME:PARA
   //ol.pushGeneratorState();
@@ -2281,6 +2481,17 @@ void MemberDef::writeDocumentation(MemberList *ml,
       ) 
      )  
   {
+    // write the overloaded method number
+    if (num > 0 && (isMethod() || isFunction()))
+    {
+      QCString methodnum;
+      ol.startParagraph();
+      ol.startBold();
+      ol.docify(methodnum.sprintf("%s %d:", isMethod() ? "Method" : "Function", num));
+      ol.endBold();
+      ol.endParagraph();
+    }
+
     ol.startParagraph();
     ol.parseDoc(briefFile(),briefLine(),
                 getOuterScope()?getOuterScope():container,this,
@@ -2293,7 +2504,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
       !inbodyDocumentation().isEmpty())
   {
     // write vhdl inline code with or without option INLINE_SOURCE
-    if (optVhdl && VhdlDocGen::isMisc(this)) 
+    if (Config_getBool("OPTIMIZE_OUTPUT_VHDL") && VhdlDocGen::isMisc(this)) 
     {
       VhdlDocGen::writeSource(this,ol,cname);
       return;
@@ -2478,8 +2689,6 @@ void MemberDef::writeDocumentation(MemberList *ml,
       }
       ol.endParagraph();
     }
-
-    //ol.writeString(".");
   }
 
   LockingPtr<MemberList> bml=reimplementedBy();
@@ -2493,10 +2702,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
     {
       // count the members that directly inherit from md and for
       // which the member and class are visible in the docs.
-      if ( bmd->isLinkable() && bcd->isLinkable() ) 
-      {
-        count++;
-      }
+      if (bmd->isLinkable() && bcd->isLinkable()) count++;
     }
     if (count>0)
     {
@@ -2642,171 +2848,6 @@ void MemberDef::writeDocumentation(MemberList *ml,
           qPrint(qualifiedName()));
     }
   }
-
-}
-
-/*! Writes the "detailed documentation" section of this member to
- *  all active output formats for methods.
- */
-void MemberDef::writeFunctionProtoDocumentation(OutputList &ol,
-                                               const char *scName,
-                                               Definition *container
-                                              )
-{
-  QCString scopeName = scName;
-  if (container->definitionType()==TypeGroup)
-  {
-    if (getClassDef())          scopeName=getClassDef()->name();
-    else if (getNamespaceDef()) scopeName=getNamespaceDef()->name();
-    else if (getFileDef())      scopeName=getFileDef()->name();
-  }
-  bool hasParameterList=false;
-  QCString ldef = definition();
-
-  ol.startMemberDocTable();
-
-  // start member doc name section
-  ol.startMemberDocName(isObjCMethod());
-
-  // write template prefix
-  ClassDef *cd=getClassDef();
-  writeTemplatePrefixDocumentation(ol,cd);
-
-  // write the function return value
-  ldef = writeSpecifierDocumentation(ol, cd, container, ldef);
-
-  // write function name and argument list
-  if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
-  {
-    VhdlDocGen::writeVHDLTypeDocumentation(this,container,ol);
-  }
-  else
-  {
-    if (isMethod()) ol.startMemberDocMethodName();
-    else if (isFunction()) ol.startMemberDocFunctionName();
-    linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef);
-    if (isMethod()) ol.endMemberDocMethodName();
-    else if (isFunction()) ol.endMemberDocFunctionName();
-    hasParameterList=writeDefArgumentList(ol,cd,scopeName,this);
-  }
-
-  Specifier lvirt=virtualness();
-  if ((!isObjCMethod() || isOptional() || isRequired()) &&
-      (protection()!=Public || lvirt!=Normal ||
-       isFriend() || isRelated() || 
-       (isInline() && Config_getBool("INLINE_INFO")) ||
-       isSignal() || isSlot() ||
-       isStatic() || 
-       (m_impl->classDef && m_impl->classDef!=container && container->definitionType()==TypeClass) ||
-       (m_impl->memSpec & ~Entry::Inline)!=0 
-      )
-     )
-  {
-    // write the member specifier list
-    ol.writeLatexSpacing();
-    ol.startTypewriter();
-    ol.writeNonBreakableSpace(1);
-    ol.startMemberDocPunctuation();
-    ol.docify("[");
-    ol.endMemberDocPunctuation();
-    QStrList sl;
-    if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
-    {
-      sl.append(VhdlDocGen::trTypeString(getMemberSpecifiers()));
-    }
-    else
-    {
-      if (isFriend()) sl.append("friend");
-      else if (isRelated()) sl.append("related");
-      else
-      {
-        if      (Config_getBool("INLINE_INFO") && isInline()) sl.append("inline");
-        if      (isExplicit())            sl.append("explicit");
-        if      (isMutable())             sl.append("mutable");
-        if      (isStatic())              sl.append("static");
-        if      (isGettable())            sl.append("get");
-        if      (isSettable())            sl.append("set");
-        if      (isAddable())             sl.append("add");
-        if      (isRemovable())           sl.append("remove");
-        if      (isRaisable())            sl.append("raise");
-        if      (isReadable())            sl.append("read");
-        if      (isWritable())            sl.append("write");
-        if      (isFinal())               sl.append("final");
-        if      (isAbstract())            sl.append("abstract");
-        if      (isOverride())            sl.append("override");
-        if      (isInitonly())            sl.append("initonly");
-        if      (isSealed())              sl.append("sealed");
-        if      (isNew())                 sl.append("new");
-        if      (isOptional())            sl.append("optional");
-        if      (isRequired())            sl.append("required");
-        if      (isAssign())              sl.append("assign");
-        else if (isCopy())                sl.append("copy");
-        else if (isRetain())              sl.append("retain");
-        if (!isObjCMethod())
-        {
-          if      (protection()==Protected) sl.append("protected");
-          else if (protection()==Private)   sl.append("private");
-          else if (protection()==Package)   sl.append("package");
-          if      (lvirt==Virtual)          sl.append("virtual");
-          else if (lvirt==Pure)             sl.append("pure virtual");
-          if      (isSignal())              sl.append("signal");
-          if      (isSlot())                sl.append("slot");
-        }
-      }
-      if (m_impl->classDef && 
-          container->definitionType()==TypeClass && 
-          m_impl->classDef!=container &&
-          !isRelated()
-         )
-      {
-        sl.append("inherited");
-      }
-    }
-    const char *s=sl.first();
-    while (s)
-    {
-      ol.startMemberDocQualifier();
-      ol.docify(s);
-      ol.endMemberDocQualifier();
-      s=sl.next();
-      if (s)
-      {
-        ol.startMemberDocPunctuation();
-        ol.docify(", ");
-        ol.endMemberDocPunctuation();
-      }
-    }
-    ol.startMemberDocPunctuation();
-    ol.docify("]");
-    ol.endMemberDocPunctuation();
-    ol.endTypewriter();
-  }
-  else if (isObjCMethod() && isImplementation())
-  {
-    ol.writeLatexSpacing();
-    ol.startTypewriter();
-    ol.writeNonBreakableSpace(1);
-    ol.startMemberDocQualifier();
-    ol.docify("[implementation]");
-    ol.endMemberDocQualifier();
-    ol.endTypewriter();
-  }
-  if (hasParameterList) 
-  {
-    ol.endParameterList();
-  }
-  else
-  {
-    ol.endMemberDocName();
-  }
-
-  ol.endMemberDocTable(TRUE);
-}
-
-void MemberDef::writeFunctionDocumentation(OutputList &ol)
-{
-  ol.startIndent();
-  ol.endIndent();
 }
 
 void MemberDef::writeTemplatePrefixDocumentation(OutputList &ol,ClassDef *cd)
@@ -2984,6 +3025,31 @@ void MemberDef::warnIfUndocumented()
     warn_undoc(getDefFileName(),getDefLine(),"warning: Member %s%s (%s) of %s %s is not documented.",
          qPrint(name()),qPrint(argsString()),qPrint(memberTypeName()),t,qPrint(d->name()));
   }
+}
+
+QCString MemberDef::getScopeName(const char *scName, Definition *container)
+{
+  QCString scopeName = scName;
+  if (container->definitionType()==TypeGroup)
+  {
+    if (getClassDef())          scopeName=getClassDef()->name();
+    else if (getNamespaceDef()) scopeName=getNamespaceDef()->name();
+    else if (getFileDef())      scopeName=getFileDef()->name();
+  }
+
+  return scopeName;
+}
+
+QCString MemberDef::getMemAnchor(Definition *container)
+{
+  QCString memAnchor = anchor();
+  if (container->definitionType()==TypeFile && getNamespaceDef())
+  { // member is in a namespace, but is written as part of the file documentation
+    // as well, so we need to make sure its label is unique.
+    memAnchor.prepend("file_");
+  }
+
+  return memAnchor;
 }
 
 bool MemberDef::isFriendClass() const
