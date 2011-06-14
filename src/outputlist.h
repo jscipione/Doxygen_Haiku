@@ -396,6 +396,10 @@ class OutputList : public OutputDocInterface
     { forall(&OutputGenerator::startMemberDocPrefixItem); }
     void endMemberDocPrefixItem()
     { forall(&OutputGenerator::endMemberDocPrefixItem); }
+    void startMemberDocTable()
+    { forall(&OutputGenerator::startMemberDocTable); }
+    void endMemberDocTable(bool hasArgs)
+    { forall(&OutputGenerator::endMemberDocTable,hasArgs); }
     void startMemberDocName(bool align)
     { forall(&OutputGenerator::startMemberDocName,align); }
     void endMemberDocName()

@@ -526,20 +526,22 @@ void MemberList::writeDocumentation(OutputList &ol,
   MemberListIterator mlj(*this);
   MemberListIterator mlk(*this);
   MemberDef *md;
+  MemberDef *md_next;
   QCString cur_name;
   QCString next_name;
   for (mli.toFirst(); (md=mli.current()); ++mli)
   {
-    cur_name = md->name();
     mlj = mli;
     mlk = mli;
-    do {
+    cur_name = md->name();
+
+    do
+    {
       ++mlj;
-      md=mlj.current();
-      if (md) next_name = md->name();
-    } while (md && next_name == cur_name);
+      md_next = mlj.current();
+      if (md_next) next_name = md_next->name();
+    } while (md_next && cur_name == next_name);
     --mlj;
-    md=mli.current();
     if (mlj>mli && (md->isMethod() || md->isFunction()))
     { // write overloaded functions all together
       // if this member is in a group find the real scope name.
@@ -585,30 +587,33 @@ void MemberList::writeDocumentation(OutputList &ol,
       QCString fname=md->name().copy();
       fname.append("()");
       ol.startMemberDoc(ciname,fname,memAnchor,md->name(),showInline);
+      ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
       fname.resize(0);
+      ol.startMemberDocProto();
 
-      while (mli<=mlj)
+      while (md && mli<mlj)
       {
-        ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
-        md->writeFunctionDeclDocumentation(ol,scopeName,container);
-        ol.endDoxyAnchor(cfname,memAnchor);
+        md->writeFunctionProtoDocumentation(ol,scopeName,container);
         ++mli;
         md=mli.current();
       }
+      md->writeFunctionProtoDocumentation(ol,scopeName,container);
 
-      ol.endMemberDoc(TRUE);
+      ol.endMemberDocProto();
 
-      --mli;
+      mli=mlk;
       md=mli.current();
 
-      /*while (mli<=mlj)
+      while (md && mli<mlj)
       {
         md->writeFunctionDocumentation(ol);
         ++mli;
         md=mli.current();
-      }*/
+      }
+      md->writeFunctionDocumentation(ol);
 
-      //ol.endMemberDocProto();
+      ol.endDoxyAnchor(cfname,memAnchor);
+      ol.endMemberDoc(TRUE);
 
       ol.popGeneratorState();
     }

@@ -350,10 +350,10 @@ class MemberDef : public Definition
                             const char *scopeName,Definition *container,
                             bool inGroup,bool showEnumValues=FALSE,bool
                             showInline=FALSE);
-    void writeFunctionDeclDocumentation(OutputList &ol,
-                                        const char *scName,
-                                        Definition *container
-                                       );
+    void writeFunctionProtoDocumentation(OutputList &ol,
+                                         const char *scName,
+                                         Definition *container
+                                        );
     void writeFunctionDocumentation(OutputList &ol);
     void writeTemplatePrefixDocumentation(OutputList &ol,ClassDef *cd);
     QCString writeSpecifierDocumentation(OutputList &ol,ClassDef *cd,Definition *container,QCString ldef);

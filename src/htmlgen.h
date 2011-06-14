@@ -238,6 +238,8 @@ class HtmlGenerator : public OutputGenerator
     void endMemberDocProto();
     void startMemberDocPrefixItem();
     void endMemberDocPrefixItem();
+    void startMemberDocTable();
+    void endMemberDocTable(bool);
     void startMemberDocName(bool);
     void endMemberDocName();
     void startMemberDocSpecifier();

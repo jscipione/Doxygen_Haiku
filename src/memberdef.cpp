@@ -1926,6 +1926,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
         linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.left(i));
         vmd->writeEnumDeclaration(ol,getClassDef(),getNamespaceDef(),getFileDef(),getGroupDef());
         linkifyText(TextGeneratorOLImpl(ol),container,getBodyDef(),name(),ldef.right(ldef.length()-i-l));
+        ol.startMemberDocProto();
         found=TRUE;
       }
     }
@@ -1934,12 +1935,14 @@ void MemberDef::writeDocumentation(MemberList *ml,
       //printf("Anonymous compound `%s'\n",cname.data());
       ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
       ol.startMemberDoc(ciname,name(),memAnchor,name(),showInline);
+      ol.startMemberDocProto();
+      ol.startMemberDocTable();
+      ol.startMemberDocName(isObjCMethod());
       // strip anonymous compound names from definition
       int si=ldef.find(' '),pi,ei=i+l;
       if (si==-1) si=0;
       while ((pi=r.match(ldef,i+l,&l))!=-1) ei=i=pi+l;
       // first si characters of ldef contain compound type name
-      ol.startMemberDocName(isObjCMethod());
       ol.docify(ldef.left(si));
       ol.startMemberDocPunctuation();
       ol.docify(" { ... } ");
@@ -1956,6 +1959,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
     if (isMethod() || isFunction()) fname.append("()");
     ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
     ol.startMemberDoc(ciname,fname,memAnchor,name(),showInline);
+    ol.startMemberDocProto();
     ClassDef *cd=getClassDef();
     if (!Config_getBool("HIDE_SCOPE_NAMES"))
     {
@@ -2006,6 +2010,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
       }
     }
 
+    ol.startMemberDocTable();
     ol.startMemberDocName(isObjCMethod());
     if (cd && cd->isObjectiveC())
     {
@@ -2220,13 +2225,16 @@ void MemberDef::writeDocumentation(MemberList *ml,
   if (hasParameterList) 
   {
     ol.endParameterList();
-    ol.endMemberDoc(TRUE);
   }
   else
   {
     ol.endMemberDocName();
-    ol.endMemberDoc(FALSE);
   }
+
+  ol.endMemberDocTable(hasParameterList);
+  ol.endMemberDocProto();
+  ol.endMemberDoc(hasParameterList);
+
   ol.endDoxyAnchor(cfname,memAnchor);
   ol.startIndent();
   // FIXME:PARA
@@ -2640,7 +2648,7 @@ void MemberDef::writeDocumentation(MemberList *ml,
 /*! Writes the "detailed documentation" section of this member to
  *  all active output formats for methods.
  */
-void MemberDef::writeFunctionDeclDocumentation(OutputList &ol,
+void MemberDef::writeFunctionProtoDocumentation(OutputList &ol,
                                                const char *scName,
                                                Definition *container
                                               )
@@ -2654,6 +2662,8 @@ void MemberDef::writeFunctionDeclDocumentation(OutputList &ol,
   }
   bool hasParameterList=false;
   QCString ldef = definition();
+
+  ol.startMemberDocTable();
 
   // start member doc name section
   ol.startMemberDocName(isObjCMethod());
@@ -2788,8 +2798,9 @@ void MemberDef::writeFunctionDeclDocumentation(OutputList &ol,
   else
   {
     ol.endMemberDocName();
-    ol.endMemberDoc(FALSE);
   }
+
+  ol.endMemberDocTable(TRUE);
 }
 
 void MemberDef::writeFunctionDocumentation(OutputList &ol)

@@ -2256,10 +2256,16 @@ void HtmlGenerator::startMemberDoc(const char *,const char *name,const char *,co
   DBG_HTML(t << "<!-- startMemberDoc -->" << endl;)
 
   t << endl << "<div class=\"memitem\">" << endl;
-  t << "<h3 class=\"memitem\">";
+  t << endl << "    <h3 class=\"memitem\">";
   docify(name);
   t << "</h3>" << endl;
-  t << "  <div class=\"memproto\">" << endl;
+}
+
+void HtmlGenerator::endMemberDoc(bool /*hasArgs*/)
+{
+  DBG_HTML(t << "<!-- endMemberDoc -->" << endl;)
+
+  t << endl << "</div>" << endl;
 }
 
 void HtmlGenerator::startMemberDocProto()
@@ -2279,21 +2285,36 @@ void HtmlGenerator::endMemberDocProto()
 void HtmlGenerator::startMemberDocPrefixItem()
 {
   DBG_HTML(t << "<!-- startMemberDocPrefixItem -->" << endl;)
+
   t << "<div class=\"memtemplate\">" << endl;
 }
 
 void HtmlGenerator::endMemberDocPrefixItem()
 {
   DBG_HTML(t << "<!-- endMemberDocPrefixItem -->" << endl;)
+
   t << "</div>" << endl;
+}
+
+void HtmlGenerator::startMemberDocTable()
+{
+  DBG_HTML(t << "<!-- startMemberDocNameTable -->" << endl;)
+
+  t << "    <table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"memname\">" << endl;
+}
+
+void HtmlGenerator::endMemberDocTable(bool hasArgs)
+{
+  DBG_HTML(t << "<!-- endMemberDocTable -->" << endl;)
+
+  if (!hasArgs) t << "      </tr>" << endl;
+  t << "    </table>" << endl;
 }
 
 void HtmlGenerator::startMemberDocName(bool /*align*/)
 {
   DBG_HTML(t << "<!-- startMemberDocName -->" << endl;)
 
-  t << "    <table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" class=\"memname\">" << endl;
-    
   t << "      <tr>" << endl;
   t << "        <td class=\"memname\">" << endl;
 }
@@ -2444,6 +2465,13 @@ void HtmlGenerator::startParameterList(bool openParen)
   t << "</td>" << endl;
 }
 
+void HtmlGenerator::endParameterList()
+{
+  DBG_HTML(t << "<!-- endParameterList -->" << endl;)
+  t << "</td>" << endl;
+  t << "      </tr>" << endl;
+}
+
 void HtmlGenerator::startParameterType(bool first,const char *key)
 {
   if (first)
@@ -2519,21 +2547,6 @@ void HtmlGenerator::endParameterName(bool last,bool emptyList,bool closeParen)
     t << "</td>" << endl;
     t << "      </tr>" << endl;
   }
-}
-
-void HtmlGenerator::endParameterList()
-{
-  DBG_HTML(t << "<!-- endParameterList -->" << endl;)
-  t << "</td>" << endl;
-  t << "      </tr>" << endl;
-}
-
-void HtmlGenerator::endMemberDoc(bool hasArgs)     
-{ 
-  DBG_HTML(t << "<!-- endMemberDoc -->" << endl;)
-  if (!hasArgs) t << "      </tr>" << endl;
-  t << "    </table>" << endl;
-  t << "  </div>" << endl;
 }
 
 void HtmlGenerator::startDotGraph()
@@ -2677,7 +2690,7 @@ void HtmlGenerator::startIndent()
 void HtmlGenerator::endIndent()          
 { 
   DBG_HTML(t << "<!-- endIndent -->" << endl;)
-  t << endl << "</div>" << endl << "</div>" << endl; 
+  t << endl << "</div>" << endl; 
 }
 
 void HtmlGenerator::addIndexItem(const char *,const char *)
