@@ -3289,17 +3289,22 @@ OPERATOR {ARITHOP}|{ASSIGNOP}|{LOGICOP}|{BITOP}
                                           g_lastVerbStringContext=YY_START;
                                           BEGIN(SkipVerbString);
                                         }
-<*>-?[0-9]+\.[0-9]+[FfDd]*              { // floating point literal
+<*>-?[0-9]*\.[0-9]+[FfDd]*              { // floating point literal
                                           startFontClass("constant");
                                           g_code->codify(yytext);
                                           endFontClass();
                                         }
-<*>-?[0-9]+[xX][0-9A-Fa-f]+             { // hexadecimal integer literal
+<*>-?0[xX][0-9A-Fa-f]+                  { // hexadecimal integer literal
                                           startFontClass("constant");
                                           g_code->codify(yytext);
                                           endFontClass();
                                         }
-<*>-?[0-9]+                             { // decimal or octal integer literal
+<*>-?0/[0-9]+                           { // octal integer literal
+                                          startFontClass("constant");
+                                          g_code->codify(yytext);
+                                          endFontClass();
+                                        }
+<*>-?[0-9]+                             { // decimal integer literal
                                           startFontClass("constant");
                                           g_code->codify(yytext);
                                           endFontClass();
