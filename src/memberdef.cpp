@@ -1204,6 +1204,292 @@ bool MemberDef::isBriefSectionVisible() const
   return visible;
 }
 
+void MemberDef::writeName(OutputList &ol,
+                          ClassDef *cd,
+                          NamespaceDef *nd,
+                          FileDef *fd,
+                          GroupDef *gd)
+{
+  Definition *d=0;
+  ASSERT (cd!=0 || nd!=0 || fd!=0 || gd!=0); // member should belong to something
+  if (cd) d=cd; else if (nd) d=nd; else if (fd) d=fd; else d=gd;
+
+  if (!name().isEmpty() && name().at(0)!='@') // hide anonymous stuff 
+  {
+    //printf("Member name=`%s gd=%p md->groupDef=%p inGroup=%d isLinkable()=%d\n",name().data(),gd,getGroupDef(),inGroup,isLinkable());
+    if (!(name().isEmpty() || name().at(0)=='@') && // name valid
+        (hasDocumentation() || isReference()) && // has docs
+        !(m_impl->prot==Private && !Config_getBool("EXTRACT_PRIVATE") && m_impl->mtype!=Friend) && // hidden due to protection
+        !(isStatic() && m_impl->classDef==0 && !Config_getBool("EXTRACT_STATIC")) // hidden due to static-ness
+       )
+    {
+      if (m_impl->annMemb)
+      {
+        //printf("anchor=%s ann_anchor=%s\n",anchor(),annMemb->anchor());
+        m_impl->annMemb->writeLink(ol,
+                                   m_impl->annMemb->getClassDef(),
+                                   m_impl->annMemb->getNamespaceDef(),
+                                   m_impl->annMemb->getFileDef(),
+                                   m_impl->annMemb->getGroupDef()
+                                  );
+        m_impl->annMemb->setAnonymousUsed();
+        setAnonymousUsed();
+      }
+      else
+      {
+        //printf("writeLink %s->%d\n",name.data(),hasDocumentation());
+        ClassDef *rcd = cd;
+        if (isReference() && m_impl->classDef) rcd = m_impl->classDef;
+        if (isMethod()) ol.startMemberDocMethodName();
+        else if (isFunction()) ol.startMemberDocFunctionName();
+        else if (isVariable()) ol.startMemberDocConstant();
+        else ol.startMemberDocSpecifier();
+        writeLink(ol,rcd,nd,fd,gd);
+        if (isMethod()) ol.endMemberDocMethodName();
+        else if (isFunction()) ol.endMemberDocFunctionName();
+        else if (isVariable()) ol.endMemberDocConstant();
+        else ol.endMemberDocSpecifier();
+      }
+    }
+    else if (isDocumentedFriendClass())
+      // if the member is an undocumented friend declaration for some class, 
+      // then maybe we can link to the class
+    {
+      writeLink(ol,getClass(name()),0,0,0);
+    }
+    else
+      // there is a brief member description and brief member 
+      // descriptions are enabled or there is no detailed description.
+    {
+      if (m_impl->annMemb)  
+      {
+        m_impl->annMemb->setAnonymousUsed();
+        setAnonymousUsed();
+      }
+      ClassDef *rcd = cd;
+      if (isReference() && m_impl->classDef) rcd = m_impl->classDef;
+      writeLink(ol,rcd,nd,fd,gd,TRUE);
+    }
+  }
+
+  // add to index
+  if (isEnumerate() && name().at(0)=='@')
+  {
+    // don't add to index
+  }
+  else // index member
+  {
+    //static bool separateMemPages = Config_getBool("SEPARATE_MEMBER_PAGES");
+    //QCString cfname = getOutputFileBase();
+    //QCString cfiname = d->getOutputFileBase();
+    //Doxygen::indexList.addIndexItem(
+    //    cname,                                 // level1
+    //    name(),                                // level2
+    //    separateMemPages ? cfname : cfiname,   // contRef
+    //    cfname,                                // memRef
+    //    anchor(),                              // anchor
+    //    this);                                 // memberdef
+    Doxygen::indexList.addIndexItem(d,this);
+  }
+
+  // *** write arguments
+  if (argsString() && !isObjCMethod()) 
+  {
+    if (m_impl->declArgList)
+      // declaration has argument list
+    {
+      ArgumentList *declArgList = m_impl->declArgList;
+      Argument *a=declArgList->first();
+      if (a)
+      {
+        ol.startMemberDocPunctuation();
+        ol.docify("("); // start argument list
+        ol.endMemberDocPunctuation();
+      }
+      else
+      {
+        ol.startMemberDocPunctuation();
+        ol.docify("()"); // empty argument list, output innertube
+        ol.endMemberDocPunctuation();
+      }
+
+      // convert the parameter documentation into a list of @param commands
+      while (a)
+      {
+        QCString declArgType = a->type.copy();
+        QCString declArgName = a->name.copy();
+        QCString declArgDefVal = a->defval.copy();
+        //printf("\n\n\n\ntype='%s' name='%s' defval='%s'\n\n\n\n", declArgType, declArgName, declArgDefVal);
+        if (!declArgType.isEmpty())
+        {
+          int pp = declArgType.findRev(" *");
+          if (pp!=-1) {
+            // Remove space before pointer operator
+            declArgType.remove(pp, 1);
+          }
+
+          ol.startMemberDocSpecifier();
+          linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgType,m_impl->annMemb,TRUE,FALSE,s_indentLevel);
+          ol.endMemberDocSpecifier();
+          ol.docify(" ");
+        }
+        if (!declArgName.isEmpty())
+        {
+          ol.startMemberDocParamName();
+          linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgName,m_impl->annMemb,TRUE,FALSE,s_indentLevel);
+          ol.endMemberDocParamName();
+        }
+        if (!a->array.isEmpty())
+        {
+          ol.docify(a->array);
+        }
+        if (!declArgDefVal.isEmpty())
+        {
+          ol.startMemberDocPunctuation();
+          ol.docify(" = ");
+          ol.endMemberDocPunctuation();
+          ol.startMemberDocConstant();
+          linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgDefVal);
+          ol.endMemberDocConstant();
+        }
+        a=declArgList->next();
+        if (a) {
+          ol.startMemberDocPunctuation();
+          ol.docify(", ");
+          ol.endMemberDocPunctuation();
+        }
+        else
+        {
+          ol.startMemberDocPunctuation();
+          ol.docify(")"); // end argument list
+          ol.endMemberDocPunctuation();
+        }
+
+        // Clean up
+        declArgType.resize(0);
+        declArgName.resize(0);
+        declArgDefVal.resize(0);
+      }
+    } else {
+      linkifyText(TextGeneratorOLImpl(ol), // out
+                  d,                       // scope
+                  getBodyDef(),            // fileScope
+                  name(),                  //
+                  argsString(),            // text
+                  m_impl->annMemb,         // autoBreak
+                  TRUE,                    // external
+                  FALSE,                   // keepSpaces
+                  s_indentLevel
+                 );
+    }
+  }
+
+  // *** write exceptions
+  if (excpString())
+  {
+    ol.writeString(" ");
+    ol.docify(excpString());
+  }
+
+  // *** write bitfields
+  if (!m_impl->bitfields.isEmpty()) // add bitfields
+  {
+    linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),m_impl->bitfields.simplifyWhiteSpace());
+  }
+  else if (hasOneLineInitializer()) // add initializer
+  {
+    if (!isDefine()) 
+    {
+      ol.startMemberDocPunctuation();
+      ol.writeString(" = ");
+      ol.endMemberDocPunctuation();
+      ol.startMemberDocConstant();
+      linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),m_impl->initializer.simplifyWhiteSpace());
+      ol.endMemberDocConstant();
+    }
+    else 
+    {
+      ol.writeNonBreakableSpace(3);
+      ol.startMemberDocConstant();
+      linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),m_impl->initializer);
+      ol.endMemberDocConstant();
+    }
+  }
+
+  if (isObjCMethod() && isImplementation())
+  {
+    ol.startTypewriter();
+    ol.writeNonBreakableSpace(1);
+    ol.startMemberDocQualifier();
+    ol.docify("[implementation]");
+    ol.endMemberDocQualifier();
+    ol.endTypewriter();
+  }
+
+  if (isProperty() && (isSettable() || isGettable()))
+  {
+    ol.writeLatexSpacing();
+    ol.startTypewriter();
+    ol.writeNonBreakableSpace(1);
+    ol.startMemberDocPunctuation();
+    ol.docify("[");
+    ol.endMemberDocPunctuation();
+    QStrList sl;
+    if (isGettable()) sl.append("get");
+    if (isSettable()) sl.append("set");
+    const char *s=sl.first();
+    while (s)
+    {
+      ol.startMemberDocIdentifier();
+      ol.docify(s);
+      ol.endMemberDocIdentifier();
+      s=sl.next();
+      if (s)
+      {
+        ol.startMemberDocPunctuation();
+        ol.docify(", ");
+        ol.endMemberDocPunctuation();
+      }
+    }
+    ol.startMemberDocPunctuation();
+    ol.docify("]");
+    ol.endMemberDocPunctuation();
+    ol.endTypewriter();
+  }
+
+  if (isEvent() && (isAddable() || isRemovable() || isRaisable()))
+  {
+    ol.writeLatexSpacing();
+    ol.startTypewriter();
+    ol.writeNonBreakableSpace(1);
+    ol.startMemberDocPunctuation();
+    ol.docify("[");
+    ol.endMemberDocPunctuation();
+    QStrList sl;
+    if (isAddable())   sl.append("add");
+    if (isRemovable()) sl.append("remove");
+    if (isRaisable())  sl.append("raise");
+    const char *s=sl.first();
+    while (s)
+    {
+      ol.startMemberDocQualifier();
+      ol.docify(s);
+      ol.startMemberDocQualifier();
+      s=sl.next();
+      if (s)
+      {
+        ol.startMemberDocPunctuation();
+        ol.docify(", ");
+        ol.endMemberDocPunctuation();
+      }
+    }
+    ol.startMemberDocPunctuation();
+    ol.docify("]");
+    ol.endMemberDocPunctuation();
+    ol.endTypewriter();
+  }
+}
+
 void MemberDef::writeDeclaration(OutputList &ol,
                                  ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd,
                                  bool inGroup
@@ -1433,283 +1719,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
   }
 
   // *** write name
-  if (!name().isEmpty() && name().at(0)!='@') // hide anonymous stuff 
-  {
-    //printf("Member name=`%s gd=%p md->groupDef=%p inGroup=%d isLinkable()=%d\n",name().data(),gd,getGroupDef(),inGroup,isLinkable());
-    if (!(name().isEmpty() || name().at(0)=='@') && // name valid
-        (hasDocumentation() || isReference()) && // has docs
-        !(m_impl->prot==Private && !Config_getBool("EXTRACT_PRIVATE") && m_impl->mtype!=Friend) && // hidden due to protection
-        !(isStatic() && m_impl->classDef==0 && !Config_getBool("EXTRACT_STATIC")) // hidden due to static-ness
-       )
-    {
-      if (m_impl->annMemb)
-      {
-        //printf("anchor=%s ann_anchor=%s\n",anchor(),annMemb->anchor());
-        m_impl->annMemb->writeLink(ol,
-                                   m_impl->annMemb->getClassDef(),
-                                   m_impl->annMemb->getNamespaceDef(),
-                                   m_impl->annMemb->getFileDef(),
-                                   m_impl->annMemb->getGroupDef()
-                                  );
-        m_impl->annMemb->setAnonymousUsed();
-        setAnonymousUsed();
-      }
-      else
-      {
-        //printf("writeLink %s->%d\n",name.data(),hasDocumentation());
-        ClassDef *rcd = cd;
-        if (isReference() && m_impl->classDef) rcd = m_impl->classDef;
-        if (isMethod()) ol.startMemberDocMethodName();
-        else if (isFunction()) ol.startMemberDocFunctionName();
-        else if (isVariable()) ol.startMemberDocConstant();
-        else ol.startMemberDocSpecifier();
-        writeLink(ol,rcd,nd,fd,gd);
-        if (isMethod()) ol.endMemberDocMethodName();
-        else if (isFunction()) ol.endMemberDocFunctionName();
-        else if (isVariable()) ol.endMemberDocConstant();
-        else ol.endMemberDocSpecifier();
-      }
-    }
-    else if (isDocumentedFriendClass())
-      // if the member is an undocumented friend declaration for some class, 
-      // then maybe we can link to the class
-    {
-      writeLink(ol,getClass(name()),0,0,0);
-    }
-    else
-      // there is a brief member description and brief member 
-      // descriptions are enabled or there is no detailed description.
-    {
-      if (m_impl->annMemb)  
-      {
-        m_impl->annMemb->setAnonymousUsed();
-        setAnonymousUsed();
-      }
-      ClassDef *rcd = cd;
-      if (isReference() && m_impl->classDef) rcd = m_impl->classDef;
-      writeLink(ol,rcd,nd,fd,gd,TRUE);
-    }
-  }
-
-  // add to index
-  if (isEnumerate() && name().at(0)=='@')
-  {
-    // don't add to index
-  }
-  else // index member
-  {
-    //static bool separateMemPages = Config_getBool("SEPARATE_MEMBER_PAGES");
-    //QCString cfname = getOutputFileBase();
-    //QCString cfiname = d->getOutputFileBase();
-    //Doxygen::indexList.addIndexItem(
-    //    cname,                                 // level1
-    //    name(),                                // level2
-    //    separateMemPages ? cfname : cfiname,   // contRef
-    //    cfname,                                // memRef
-    //    anchor(),                              // anchor
-    //    this);                                 // memberdef
-    Doxygen::indexList.addIndexItem(d,this);
-  }
-
-  // *** write arguments
-  if (argsString() && !isObjCMethod()) 
-  {
-    if (m_impl->declArgList)
-      // declaration has argument list
-    {
-      ArgumentList *declArgList = m_impl->declArgList;
-      Argument *a=declArgList->first();
-      if (a)
-      {
-        ol.startMemberDocPunctuation();
-        ol.docify("("); // start argument list
-        ol.endMemberDocPunctuation();
-      }
-      else
-      {
-        ol.startMemberDocPunctuation();
-        ol.docify("()"); // empty argument list, output innertube
-        ol.endMemberDocPunctuation();
-      }
-
-      // convert the parameter documentation into a list of @param commands
-      while (a)
-      {
-        QCString declArgType = a->type.copy();
-        QCString declArgName = a->name.copy();
-        QCString declArgDefVal = a->defval.copy();
-        //printf("\n\n\n\ntype='%s' name='%s' defval='%s'\n\n\n\n", declArgType, declArgName, declArgDefVal);
-        if (!declArgType.isEmpty())
-        {
-          int pp = declArgType.findRev(" *");
-          if (pp!=-1) {
-            // Remove space before pointer operator
-            declArgType.remove(pp, 1);
-          }
-
-          ol.startMemberDocSpecifier();
-          linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgType,m_impl->annMemb,TRUE,FALSE,s_indentLevel);
-          ol.endMemberDocSpecifier();
-          ol.docify(" ");
-        }
-        if (!declArgName.isEmpty())
-        {
-          ol.startMemberDocParamName();
-          linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgName,m_impl->annMemb,TRUE,FALSE,s_indentLevel);
-          ol.endMemberDocParamName();
-        }
-        if (!a->array.isEmpty())
-        {
-          ol.docify(a->array);
-        }
-        if (!declArgDefVal.isEmpty())
-        {
-          ol.startMemberDocPunctuation();
-          ol.docify(" = ");
-          ol.endMemberDocPunctuation();
-          ol.startMemberDocConstant();
-          linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),declArgDefVal);
-          ol.endMemberDocConstant();
-        }
-        a=declArgList->next();
-        if (a) {
-          ol.startMemberDocPunctuation();
-          ol.docify(", ");
-          ol.endMemberDocPunctuation();
-        }
-        else
-        {
-          ol.startMemberDocPunctuation();
-          ol.docify(")"); // end argument list
-          ol.endMemberDocPunctuation();
-        }
-
-        // Clean up
-        declArgType.resize(0);
-        declArgName.resize(0);
-        declArgDefVal.resize(0);
-      }
-    } else {
-      linkifyText(TextGeneratorOLImpl(ol), // out
-                  d,                       // scope
-                  getBodyDef(),            // fileScope
-                  name(),                  //
-                  argsString(),            // text
-                  m_impl->annMemb,         // autoBreak
-                  TRUE,                    // external
-                  FALSE,                   // keepSpaces
-                  s_indentLevel
-                 );
-    }
-  }
-
-  // *** write exceptions
-  if (excpString())
-  {
-    ol.writeString(" ");
-    ol.docify(excpString());
-  }
-
-  // *** write bitfields
-  if (!m_impl->bitfields.isEmpty()) // add bitfields
-  {
-    linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),m_impl->bitfields.simplifyWhiteSpace());
-  }
-  else if (hasOneLineInitializer()
-      //!init.isEmpty() && initLines==0 && // one line initializer
-      //((maxInitLines>0 && userInitLines==-1) || userInitLines>0) // enabled by default or explicitly
-          ) // add initializer
-  {
-    if (!isDefine()) 
-    {
-      ol.startMemberDocPunctuation();
-      ol.writeString(" = ");
-      ol.endMemberDocPunctuation();
-      ol.startMemberDocConstant();
-      linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),m_impl->initializer.simplifyWhiteSpace());
-      ol.endMemberDocConstant();
-    }
-    else 
-    {
-      ol.writeNonBreakableSpace(3);
-      ol.startMemberDocConstant();
-      linkifyText(TextGeneratorOLImpl(ol),d,getBodyDef(),name(),m_impl->initializer);
-      ol.endMemberDocConstant();
-    }
-  }
-
-  if (isObjCMethod() && isImplementation())
-  {
-    ol.startTypewriter();
-    ol.writeNonBreakableSpace(1);
-    ol.startMemberDocQualifier();
-    ol.docify("[implementation]");
-    ol.endMemberDocQualifier();
-    ol.endTypewriter();
-  }
-
-  if (isProperty() && (isSettable() || isGettable()))
-  {
-      ol.writeLatexSpacing();
-      ol.startTypewriter();
-      ol.writeNonBreakableSpace(1);
-      ol.startMemberDocPunctuation();
-      ol.docify("[");
-      ol.endMemberDocPunctuation();
-      QStrList sl;
-      if (isGettable()) sl.append("get");
-      if (isSettable()) sl.append("set");
-      const char *s=sl.first();
-      while (s)
-      {
-        ol.startMemberDocIdentifier();
-        ol.docify(s);
-        ol.endMemberDocIdentifier();
-        s=sl.next();
-        if (s)
-        {
-          ol.startMemberDocPunctuation();
-          ol.docify(", ");
-          ol.endMemberDocPunctuation();
-        }
-      }
-      ol.startMemberDocPunctuation();
-      ol.docify("]");
-      ol.endMemberDocPunctuation();
-      ol.endTypewriter();
-  }
-
-  if (isEvent() && (isAddable() || isRemovable() || isRaisable()))
-  {
-      ol.writeLatexSpacing();
-      ol.startTypewriter();
-      ol.writeNonBreakableSpace(1);
-      ol.startMemberDocPunctuation();
-      ol.docify("[");
-      ol.endMemberDocPunctuation();
-      QStrList sl;
-      if (isAddable())   sl.append("add");
-      if (isRemovable()) sl.append("remove");
-      if (isRaisable())  sl.append("raise");
-      const char *s=sl.first();
-      while (s)
-      {
-        ol.startMemberDocQualifier();
-        ol.docify(s);
-        ol.startMemberDocQualifier();
-        s=sl.next();
-        if (s)
-        {
-          ol.startMemberDocPunctuation();
-          ol.docify(", ");
-          ol.endMemberDocPunctuation();
-        }
-      }
-      ol.startMemberDocPunctuation();
-      ol.docify("]");
-      ol.endMemberDocPunctuation();
-      ol.endTypewriter();
-  }
+  writeName(ol,cd,nd,fd,gd);
 
   if (!detailsVisible && !m_impl->annMemb)
   {
@@ -2479,17 +2489,17 @@ void MemberDef::writeBodyDocumentation(OutputList &ol,
       (Config_getBool("REPEAT_BRIEF") || 
        !Config_getBool("BRIEF_MEMBER_DESC")
       ) 
-     )  
+     )
   {
     // write the overloaded method number
     if (num > 0 && (isMethod() || isFunction()))
     {
-      QCString methodnum;
-      ol.startParagraph();
-      ol.startBold();
-      ol.docify(methodnum.sprintf("%s %d:", isMethod() ? "Method" : "Function", num));
-      ol.endBold();
-      ol.endParagraph();
+      ol.writeNonBreakableSpace(1);
+      ol.startMemberDocProto();
+      writeName(ol,getClassDef(),getNamespaceDef(),getFileDef(),getGroupDef());
+      ol.endMemberDocProto();
+      //QCString methodnum;
+      //ol.docify(methodnum.sprintf("%s %d:", isMethod() ? "Method" : "Function", num));
     }
 
     ol.startParagraph();

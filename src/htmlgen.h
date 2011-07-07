@@ -201,7 +201,8 @@ class HtmlGenerator : public OutputGenerator
     void writeQuickLinks(bool compact,HighlightedItem hli);
     void startContents();
     void endContents();
-    void writeNonBreakableSpace(int);
+    void writeNonBreakableSpace(int n) { int i; for (i=0;i<n;i++) t << "&#160;"; }
+    void writeBreak(int n) { int i; for (i=0;i<n;i++) t << "<br />\n"; }
     
     void startDescTable()
     { t << "<table border=\"0\" cellspacing=\"2\" cellpadding=\"0\">" << endl; }

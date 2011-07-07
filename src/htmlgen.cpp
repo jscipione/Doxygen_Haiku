@@ -2697,15 +2697,6 @@ void HtmlGenerator::addIndexItem(const char *,const char *)
 {
 }
 
-void HtmlGenerator::writeNonBreakableSpace(int n)
-{
-  int i;
-  for (i=0;i<n;i++)
-  {
-    t << "&#160;";
-  }
-}
-
 void HtmlGenerator::writeLineNumber(const char *ref,const char *filename,
                                     const char *anchor,int l)
 {

@@ -188,6 +188,7 @@ class ManGenerator : public OutputGenerator
     void startContents() {}
     void endContents() {}
     void writeNonBreakableSpace(int n) { int i; for (i=0;i<n;i++) t << " "; }
+    void writeBreak(int n) { int i; for (i=0;i<n;i++) t << "\n"; }
     
     void startDescTable() {}
     void endDescTable() {}

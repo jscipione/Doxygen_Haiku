@@ -348,6 +348,8 @@ class OutputList : public OutputDocInterface
     { forall(&OutputGenerator::endContents); }
     void writeNonBreakableSpace(int num)
     { forall(&OutputGenerator::writeNonBreakableSpace,num); }
+    void writeBreak(int num)
+    { forall(&OutputGenerator::writeBreak,num); }
     void startDescTable()
     { forall(&OutputGenerator::startDescTable); }
     void endDescTable()

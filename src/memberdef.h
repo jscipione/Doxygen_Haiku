@@ -343,6 +343,8 @@ class MemberDef : public Definition
     //-----------------------------------------------------------------------------------
 
     // output generation
+    void writeName(OutputList &ol,
+                   ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd);
     void writeDeclaration(OutputList &ol,
                    ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd,
                    bool inGroup);

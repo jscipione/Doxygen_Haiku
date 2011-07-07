@@ -183,7 +183,8 @@ class RTFGenerator : public OutputGenerator
     void startContents() {}
     void endContents() {}
     void writeNonBreakableSpace(int);
-	
+    void writeBreak(int n) { int i; for (i=0;i<n;i++) t << "\n"; }
+
     void startDescTable();
     void endDescTable();
     void startDescTableTitle();
