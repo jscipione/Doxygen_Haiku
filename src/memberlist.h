@@ -137,14 +137,32 @@ class MemberList : public QList<MemberDef>
     void countDecMembers(bool countEnumValues=FALSE,GroupDef *gd=0);
     void countDocMembers(bool countEnumValues=FALSE);
     void writePlainDeclarations(OutputList &ol,
-               ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd);
+                                ClassDef *cd,
+                                NamespaceDef *nd,
+                                FileDef *fd,
+                                GroupDef *gd
+                               );
     void writeDeclarations(OutputList &ol,
-               ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd,
-               const char *title,const char *subtitle,bool showEnumValues=FALSE,bool showInline=FALSE);
-    void writeDocumentation(OutputList &ol,const char *scopeName,
-               Definition *container,const char *title,bool showEnumValues=FALSE,bool showInline=FALSE);
+                           ClassDef *cd,
+                           NamespaceDef *nd,
+                           FileDef *fd,
+                           GroupDef *gd,
+                           const char *title,
+                           const char *subtitle,
+                           bool showEnumValues=FALSE,
+                           bool showInline=FALSE
+                          );
+    void writeDocumentation(OutputList &ol,
+                            const char *scopeName,
+                            Definition *container,
+                            const char *title,
+                            bool showEnumValues=FALSE,
+                            bool showInline=FALSE
+                           );
     void writeDocumentationPage(OutputList &ol,
-               const char *scopeName, Definition *container);
+                                const char *scopeName,
+                                Definition *container
+                               );
     bool declVisible() const;
     void addMemberGroup(MemberGroup *mg);
     void setInGroup(bool inGroup) { m_inGroup=inGroup; }

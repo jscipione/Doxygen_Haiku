@@ -248,8 +248,11 @@ bool MemberList::declVisible() const
 }
 
 void MemberList::writePlainDeclarations(OutputList &ol,
-                       ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd
-                      )
+                                        ClassDef *cd,
+                                        NamespaceDef *nd,
+                                        FileDef *fd,
+                                        GroupDef *gd
+                                       )
 {
   //printf("----- writePlainDeclaration() ----\n");
   countDecMembers();
@@ -408,9 +411,15 @@ void MemberList::writePlainDeclarations(OutputList &ol,
 }
 
 void MemberList::writeDeclarations(OutputList &ol,
-             ClassDef *cd,NamespaceDef *nd,FileDef *fd,GroupDef *gd,
-             const char *title,const char *subtitle, bool showEnumValues,
-             bool showInline)
+                                   ClassDef *cd,
+                                   NamespaceDef *nd,
+                                   FileDef *fd,
+                                   GroupDef *gd,
+                                   const char *title,
+                                   const char *subtitle,
+                                   bool showEnumValues,
+                                   bool showInline
+                                  )
 {
   //printf("----- writeDeclaration() this=%p ----\n",this);
   static bool optimizeVhdl = Config_getBool("OPTIMIZE_OUTPUT_VHDL");
@@ -505,11 +514,13 @@ void MemberList::writeDeclarations(OutputList &ol,
 }
 
 void MemberList::writeDocumentation(OutputList &ol,
-                     const char *scopeName, Definition *container,
-                     const char *title,bool showEnumValues,bool showInline)
+                                    const char *scopeName,
+                                    Definition *container,
+                                    const char *title,
+                                    bool showEnumValues,
+                                    bool showInline
+                                   )
 {
-  //printf("MemberList::writeDocumentation()\n");
-
   countDocMembers(showEnumValues);
   if (numDocMembers()==0) return;
 
@@ -544,31 +555,29 @@ void MemberList::writeDocumentation(OutputList &ol,
     --mlj;
     if (mlj>mli && (md->isMethod() || md->isFunction()))
     { // write overloaded functions all together
-      md->writeFunctionHeaderDocumentation(ol,scopeName,container,showInline);
+      QCString fname=md->name();
+      fname.append("()");
+      ol.startMemberDoc(NULL,fname,NULL,NULL,showInline);
       ol.startMemberDocProto();
-
       while (md && mli<mlj)
       {
-        md->writeFunctionProtoDocumentation(ol,scopeName,container);
+        md->writeOverloadedFunctionProto(ol,scopeName,container);
         ++mli;
         md=mli.current();
       }
-      md->writeFunctionProtoDocumentation(ol,scopeName,container);
-
+      md->writeOverloadedFunctionProto(ol,scopeName,container);
       ol.endMemberDocProto();
 
       mli=mlk;
       md=mli.current();
 
-      int i=1;
       while (md && mli<mlj)
       {
-        md->writeBodyDocumentation(ol,scopeName,container, i);
+        md->writeBody(ol,scopeName,container,TRUE);
         ++mli;
         md=mli.current();
-        i++;
       }
-      md->writeBodyDocumentation(ol,scopeName,container, i);
+      md->writeBody(ol,scopeName,container,TRUE);
 
       ol.endMemberDoc(TRUE);
     }
@@ -592,7 +601,9 @@ void MemberList::writeDocumentation(OutputList &ol,
 }
 
 void MemberList::writeDocumentationPage(OutputList &ol,
-                     const char *scopeName, Definition *container)
+                                        const char *scopeName,
+                                        Definition *container
+                                       )
 {
   static bool generateTreeView = Config_getBool("GENERATE_TREEVIEW");
   MemberListIterator mli(*this);
@@ -844,5 +855,3 @@ int MemberSDict::compareItems(GCI item1, GCI item2)
   int cmp = stricmp(c1->name(),c2->name());
   return cmp!=0 ? cmp : c1->getDefLine()-c2->getDefLine();
 }
-
-
