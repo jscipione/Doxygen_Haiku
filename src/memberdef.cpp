@@ -1506,6 +1506,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
   Definition *d=0;
   ASSERT (cd!=0 || nd!=0 || fd!=0 || gd!=0); // member should belong to something
   if (cd) d=cd; else if (nd) d=nd; else if (fd) d=fd; else d=gd;
+
   // write tag file information of this member
   if (!Config_getString("GENERATE_TAGFILE").isEmpty() && !isReference())
   {
@@ -1576,7 +1577,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
   bool isAnonymous = annoClassDef || m_impl->annMemb || m_impl->annEnumType;
   ///printf("startMemberItem for %s\n",name().data());
   ol.startMemberItem( isAnonymous ? 1 : m_impl->tArgList ? 3 : 0);
-  // If there is no detailed description we need to write the anchor here.
+  // If there is no detailed description write the anchor here.
   bool detailsVisible = isDetailedSectionLinkable();
   if (!detailsVisible && !m_impl->annMemb)
   {
@@ -1721,6 +1722,7 @@ void MemberDef::writeDeclaration(OutputList &ol,
   // *** write name
   writeName(ol,cd,nd,fd,gd);
 
+  // If there is no detailed description end the anchor here.
   if (!detailsVisible && !m_impl->annMemb)
   {
     ol.endDoxyAnchor(cfname,anchor());
@@ -2280,7 +2282,6 @@ void MemberDef::writeFunctionHeaderDocumentation(OutputList &ol,
   QCString fname=name().copy();
   fname.append("()");
   ol.startMemberDoc(ciname,fname,memAnchor,name(),showInline);
-  ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
   fname.resize(0);
 }
 
@@ -2431,7 +2432,6 @@ void MemberDef::writeFunctionProtoDocumentation(OutputList &ol,
   }
 
   ol.endMemberDocTable(TRUE);
-  ol.endDoxyAnchor(getOutputFileBase(),getMemAnchor(container));
 }
 
 void MemberDef::writeBodyDocumentation(OutputList &ol,
@@ -2441,10 +2441,21 @@ void MemberDef::writeBodyDocumentation(OutputList &ol,
                                       )
 {
   QCString scopeName = getScopeName(scName,container);
-  QCString ciname = container->name();
   QCString cname  = container->name();
+  QCString ciname = container->name();
+  if (container->definitionType()==TypeGroup)
+    ciname = ((GroupDef *)container)->groupTitle();
   QCString cfname = getOutputFileBase();
-  QCString cfiname = container->getOutputFileBase();
+  //QCString memAnchor = getMemAnchor(container);
+  QCString memAnchor = anchor();
+  QCString doxyName=name().copy();
+  if (scopeName &&
+      !Config_getBool("HIDE_SCOPE_NAMES") &&
+      !Config_getBool("OPTIMIZE_OUTPUT_FOR_C"))
+  {
+    doxyName.prepend((QCString)scopeName+"::");
+  }
+  QCString doxyArgs=argsString();
 
   ol.startIndent();
   // FIXME:PARA
@@ -2491,15 +2502,19 @@ void MemberDef::writeBodyDocumentation(OutputList &ol,
       ) 
      )
   {
-    // write the overloaded method number
+    // write the overloaded method name
     if (num > 0 && (isMethod() || isFunction()))
     {
-      ol.writeNonBreakableSpace(1);
+      // Write the doxyAnchor
+      ol.startDoxyAnchor(cfname,cname,memAnchor,doxyName,doxyArgs);
+
+      ol.writeBreak(1);
       ol.startMemberDocProto();
       writeName(ol,getClassDef(),getNamespaceDef(),getFileDef(),getGroupDef());
       ol.endMemberDocProto();
       //QCString methodnum;
       //ol.docify(methodnum.sprintf("%s %d:", isMethod() ? "Method" : "Function", num));
+      ol.endDoxyAnchor(cfname,memAnchor);
     }
 
     ol.startParagraph();
