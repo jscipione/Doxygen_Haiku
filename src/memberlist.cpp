@@ -524,6 +524,12 @@ void MemberList::writeDocumentation(OutputList &ol,
   countDocMembers(showEnumValues);
   if (numDocMembers()==0) return;
 
+  if (Config_getBool("SORT_MEMBER_DOCS"))
+  {
+    // Sort the member list so that all the constructors are together
+    this->sort();
+  }
+
   if (title)
   {
     ol.writeRuler();
