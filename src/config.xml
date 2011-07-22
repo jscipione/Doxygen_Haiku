@@ -437,6 +437,13 @@ Note: This option is not very useful if HIDE_SCOPE_NAMES is set to YES.
 Note: This option applies only to the class list, not to the 
 alphabetical list. 
 ' defval='0'/>
+    <option type='bool' id='GROUP_OVERLOADED_MEMBERS' docs='
+If the GROUP_OVERLOADED_MEMBERS tag is set to YES then doxygen will 
+group overloaded functions and methods together in the detailed 
+documentation. Since the grouping relies on the functions or methods 
+to be next to each other alphabetically this tag will be ignored if 
+you have the SORT_MEMBER_DOCS tag set to NO. 
+' defval='0' depends='SORT_MEMBER_DOCS'/>
     <option type='bool' id='STRICT_PROTO_MATCHING' docs='
 If the STRICT_PROTO_MATCHING option is enabled and doxygen fails to 
 do proper type resolution of all parameters of a function it will reject a 

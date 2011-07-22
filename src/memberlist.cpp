@@ -524,9 +524,8 @@ void MemberList::writeDocumentation(OutputList &ol,
   countDocMembers(showEnumValues);
   if (numDocMembers()==0) return;
 
-  if (Config_getBool("SORT_MEMBER_DOCS"))
-  {
-    // Sort the member list so that all the constructors are together
+  if (Config_getBool("SORT_MEMBER_DOCS")) {
+    // Sort the member list so that all the overloaded methods are together
     this->sort();
   }
 
@@ -554,13 +553,16 @@ void MemberList::writeDocumentation(OutputList &ol,
 
     do
     {
+      // increment to detect overloaded function/method names
       ++mlj;
       md_next = mlj.current();
       if (md_next) next_name = md_next->name();
     } while (md_next && cur_name == next_name);
-    --mlj;
-    if (mlj>mli && (md->isMethod() || md->isFunction()))
-    { // write overloaded functions all together
+    --mlj; // we always increment at least once above so go back one
+    if (Config_getBool("SORT_MEMBER_DOCS") &&
+        Config_getBool("GROUP_OVERLOADED_MEMBERS") &&
+        mlj>mli && (md->isMethod() || md->isFunction()))
+    { // write overloaded functions/methods together
       QCString fname=md->name();
       fname.append("()");
       ol.startMemberDoc(NULL,fname,NULL,NULL,showInline);
@@ -589,6 +591,7 @@ void MemberList::writeDocumentation(OutputList &ol,
     }
     else
     {
+      // write the documentation for a single member
       md->writeDocumentation(this,ol,scopeName,container,
                              m_inGroup,showEnumValues,showInline);
     }

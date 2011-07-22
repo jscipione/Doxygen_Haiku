@@ -626,6 +626,17 @@ void addConfigOptions(Config *cfg)
                 );
   //----
   cb = cfg->addBool(
+                 "GROUP_OVERLOADED_MEMBERS",
+                 "If the GROUP_OVERLOADED_MEMBERS tag is set to YES then doxygen will\n"
+                 "group overloaded functions and methods together in the detailed\n"
+                 "documentation. Since the grouping relies on the functions or methods\n"
+                 "to be next to each other alphabetically this tag will be ignored if\n"
+                 "you have the SORT_MEMBER_DOCS tag set to NO.",
+                 FALSE
+                );
+  cb->addDependency("SORT_MEMBER_DOCS");
+  //----
+  cb = cfg->addBool(
                  "STRICT_PROTO_MATCHING",
                  "If the STRICT_PROTO_MATCHING option is enabled and doxygen fails to\n"
                  "do proper type resolution of all parameters of a function it will reject a\n"
