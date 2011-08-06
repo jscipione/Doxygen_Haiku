@@ -1613,10 +1613,14 @@ void MemberDef::writeDeclarationName(OutputList &ol,
         //printf("\n\n\n\ntype='%s' name='%s' defval='%s'\n\n\n\n", declArgType, declArgName, declArgDefVal);
         if (!declArgType.isEmpty())
         {
-          int pp = declArgType.findRev(" *");
-          if (pp!=-1) {
-            // Remove space before pointer operator
-            declArgType.remove(pp, 1);
+          // Remove space before pointer operator
+          int ep = declArgType.findRev(" *");
+          if (ep!=-1) {
+            declArgType.remove(ep, 1);
+          }
+          ep = declArgType.findRev(" &");
+          if (ep!=-1) {
+            declArgType.remove(ep, 1);
           }
 
           ol.startMemberDocSpecifier();
