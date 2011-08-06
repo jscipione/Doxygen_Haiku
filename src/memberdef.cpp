@@ -1400,6 +1400,15 @@ void MemberDef::writeDeclaration(OutputList &ol,
   }
   else
   {
+    // Remove space before pointer operator
+    int ep = ltype.findRev(" *");
+    if (ep!=-1) {
+      ltype.remove(ep, 1);
+    }
+    ep = ltype.findRev(" &");
+    if (ep!=-1) {
+      ltype.remove(ep, 1);
+    }
     if (isObjCMethod())
     {
       ltype.prepend("(");
