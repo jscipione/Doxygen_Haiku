@@ -2264,7 +2264,7 @@ void MemberDef::writeOverloadedFunctionProto(OutputList &ol,
   writeTemplatePrefixDocumentation(ol,cd);
 
   // write the function return value
-  ldef = writeSpecifierDocumentation(ol, cd, container, ldef);
+  ldef = writeSpecifierDocumentation(ol,cd,container,ldef);
 
   // write function name and argument list
   if (Config_getBool("OPTIMIZE_OUTPUT_VHDL"))
@@ -2395,10 +2395,10 @@ void MemberDef::writeOverloadedFunctionProto(OutputList &ol,
 }
 
 void MemberDef::writeBody(OutputList &ol,
-                                       const char *scName,
-                                       Definition *container,
-                                       bool overloaded
-                                      )
+                          const char *scName,
+                          Definition *container,
+                          bool overloaded
+                         )
 {
   QCString scopeName = getScopeName(scName,container);
   QCString cname  = container->name();
@@ -2472,6 +2472,9 @@ void MemberDef::writeBody(OutputList &ol,
       // Write the member name
       ol.writeBreak(1);
       ol.startMemberDocProto();
+      // write the function return value
+      writeSpecifierDocumentation(ol,getClassDef(),container,definition());
+      // write the rest
       writeDeclarationName(ol,getClassDef(),getNamespaceDef(),getFileDef(),getGroupDef());
       ol.endMemberDocProto();
       ol.endDoxyAnchor(cfname,memAnchor);
@@ -2893,7 +2896,11 @@ void MemberDef::writeTemplatePrefixDocumentation(OutputList &ol,ClassDef *cd)
   }
 }
 
-QCString MemberDef::writeSpecifierDocumentation(OutputList &ol,ClassDef *cd,Definition *container,QCString ldef)
+QCString MemberDef::writeSpecifierDocumentation(OutputList &ol,
+                                                ClassDef *cd,
+                                                Definition *container,
+                                                QCString ldef
+                                               )
 {
   if (cd && cd->isObjectiveC())
   {
