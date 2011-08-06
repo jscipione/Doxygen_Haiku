@@ -180,10 +180,15 @@ static bool writeDefArgumentList(OutputList &ol,ClassDef *cd,
       if (a->type!="...")
       {
         if (!cName.isEmpty()) n=addTemplateNames(n,cd->name(),cName);
-        int pp = n.findRev(" *");
-        if (pp!=-1) {
-          // Remove space before pointer operator
-          n.remove(pp, 1);
+
+        // Remove space before pointer operator
+        int ep = n.findRev(" *");
+        if (ep!=-1) {
+          n.remove(ep, 1);
+        }
+        ep = n.findRev(" &");
+        if (ep!=-1) {
+          n.remove(ep, 1);
         }
 
         if (md->isObjCMethod()) { n.prepend("("); n.append(")"); }
@@ -2055,7 +2060,8 @@ void MemberDef::writeDocumentation(MemberList *ml,
       int ep = ldef.findRev(' ');
       if (ep!=-1)
       {
-        if (ldef.mid(ep-2, 2)==" *")
+        // Take out space before pointer specifier
+        if (ldef.mid(ep-2, 2)==" *" || ldef.mid(ep-2, 2)==" &")
         {
           ldef.remove((uint)ep-2, 1);
         }
@@ -2940,7 +2946,8 @@ QCString MemberDef::writeSpecifierDocumentation(OutputList &ol,
     int ep = ldef.findRev(' ');
     if (ep!=-1)
     {
-      if (ldef.mid(ep-2, 2)==" *")
+      // Take out space before pointer specifier
+      if (ldef.mid(ep-2, 2)==" *" || ldef.mid(ep-2, 2)==" &")
       {
         ldef.remove((uint)ep-2, 1);
       }
