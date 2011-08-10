@@ -7525,7 +7525,7 @@ static void deleteSpecChars(char* str,char *buf)
   {
     if ((*str == '\t') || (*str == '\n') || (*str == '\r') || (*str == ' ')) 
     {
-      *str++;
+      str++;
     }
     else
     {

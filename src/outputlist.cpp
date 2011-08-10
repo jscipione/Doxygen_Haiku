@@ -131,14 +131,14 @@ void OutputList::popGeneratorState()
 }
 
 void OutputList::parseDoc(const char *fileName,int startLine,
-                  Definition *ctx,MemberDef *md,
+                  Definition *ctx,MemberDef * md,
                   const QCString &docStr,bool indexWords,
                   bool isExample,const char *exampleName,
                   bool singleLine,bool linkFromIndex)
 {
   int count=0;
   if (docStr.isEmpty()) return;
-
+  
   OutputGenerator *og=outputs->first();
   while (og)
   {
@@ -166,8 +166,7 @@ void OutputList::parseDoc(const char *fileName,int startLine,
   {
     //printf("og->printDoc(extension=%s)\n",
     //    ctx?ctx->getDefFileExtension().data():"<null>");
-    if (og->isEnabled())
-        og->printDoc(root,ctx?ctx->getDefFileExtension():QCString(""));
+    if (og->isEnabled()) og->printDoc(root,ctx?ctx->getDefFileExtension():QCString(""));
     og=outputs->next();
   }
 

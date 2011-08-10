@@ -609,6 +609,22 @@ void MemberList::writeDocumentation(OutputList &ol,
   ol.endMemberDocList();
 }
 
+void MemberList::writeSimpleDocumentation(OutputList &ol,
+                                          Definition *container)
+{
+  countDocMembers(FALSE);
+  if (numDocMembers()==0) return;
+
+  ol.startMemberDocSimple();
+  MemberListIterator mli(*this);
+  MemberDef *md;
+  for ( ; (md=mli.current()) ; ++mli)
+  {
+    md->writeMemberDocSimple(ol,container);
+  }
+  ol.endMemberDocSimple();
+}
+
 void MemberList::writeDocumentationPage(OutputList &ol,
                                         const char *scopeName,
                                         Definition *container
@@ -644,6 +660,7 @@ void MemberList::writeDocumentationPage(OutputList &ol,
     ol.writeString("    </td>\n");
     ol.writeString("  </tr>\n");
     ol.writeString("</table>\n");
+
 
     if (generateTreeView)
     {
@@ -864,3 +881,5 @@ int MemberSDict::compareItems(GCI item1, GCI item2)
   int cmp = stricmp(c1->name(),c2->name());
   return cmp!=0 ? cmp : c1->getDefLine()-c2->getDefLine();
 }
+
+

@@ -34,9 +34,9 @@ class RTFGenerator : public OutputGenerator
     void enable() 
     { if (genStack->top()) active=*genStack->top(); else active=TRUE; }
     void disable() { active=FALSE; }
-    void enableIf(OutputType o)  { if (o==RTF) active=TRUE;  }
-    void disableIf(OutputType o) { if (o==RTF) active=FALSE; }
-    void disableIfNot(OutputType o) { if (o!=RTF) active=FALSE; }
+    void enableIf(OutputType o)  { if (o==RTF) enable();  }
+    void disableIf(OutputType o) { if (o==RTF) disable(); }
+    void disableIfNot(OutputType o) { if (o!=RTF) disable(); }
     bool isEnabled(OutputType o) { return (o==RTF && active); } 
     OutputGenerator *get(OutputType o) { return (o==RTF) ? this : 0; }
 
@@ -106,8 +106,6 @@ class RTFGenerator : public OutputGenerator
     void endMemberDocList() {}
     void startMemberList();
     void endMemberList();
-    void startInlineDescription();
-    void endInlineDescription();
     void startInlineHeader();
     void endInlineHeader();
     void startAnonTypeScope(int) {}
@@ -242,7 +240,7 @@ class RTFGenerator : public OutputGenerator
     void startMemberDocQualifier() {}
     void endMemberDocQualifier() {}
     void startParameterType(bool,const char *);
-    void endParameterType() {}
+    void endParameterType();
     void startParameterName(bool) {}
     void endParameterName(bool,bool,bool) {}
     void startParameterList(bool) {}
@@ -257,6 +255,14 @@ class RTFGenerator : public OutputGenerator
     void endConstraintDocs();
     void endConstraintList();
 
+    void startMemberDocSimple();
+    void endMemberDocSimple();
+    void startInlineMemberType();
+    void endInlineMemberType();
+    void startInlineMemberName();
+    void endInlineMemberName();
+    void startInlineMemberDoc();
+    void endInlineMemberDoc();
 
     void startFontClass(const char *) {}
     void endFontClass() {}

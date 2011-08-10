@@ -348,6 +348,11 @@ class LayoutParser : public QXmlDefaultHandler
           new EndElementHandler(this,&LayoutParser::endMemberDecl));
       m_sHandler.insert("class/memberdef", 
           new StartElementHandler(this,&LayoutParser::startMemberDef));
+      m_sHandler.insert("class/memberdef/inlineclasses", 
+          new StartElementHandlerSection(this,LayoutDocEntry::ClassInlineClasses,&LayoutParser::startSectionEntry,
+                                         fortranOpt ? theTranslator->trTypeDocumentation() :
+                                         theTranslator->trClassDocumentation() 
+                                         ));
       m_sHandler.insert("class/memberdef/typedefs", 
           new StartElementHandlerMember(this,&LayoutParser::startMemberDefEntry,
                                         MemberList::typedefMembers,theTranslator->trMemberTypedefDocumentation()));
@@ -426,6 +431,11 @@ class LayoutParser : public QXmlDefaultHandler
           new EndElementHandler(this,&LayoutParser::endMemberDecl));
       m_sHandler.insert("namespace/memberdef", 
           new StartElementHandler(this,&LayoutParser::startMemberDef));
+      m_sHandler.insert("namespace/memberdef/inlineclasses", 
+          new StartElementHandlerSection(this,LayoutDocEntry::NamespaceInlineClasses,&LayoutParser::startSectionEntry,
+                                         fortranOpt ? theTranslator->trTypeDocumentation() :
+                                         theTranslator->trClassDocumentation() 
+                                         ));
       m_sHandler.insert("namespace/memberdef/typedefs", 
           new StartElementHandlerMember(this,&LayoutParser::startMemberDefEntry,
                                         MemberList::docTypedefMembers,theTranslator->trTypedefDocumentation()));
@@ -503,6 +513,11 @@ class LayoutParser : public QXmlDefaultHandler
           new EndElementHandler(this,&LayoutParser::endMemberDecl));
       m_sHandler.insert("file/memberdef", 
           new StartElementHandler(this,&LayoutParser::startMemberDef));
+      m_sHandler.insert("file/memberdef/inlineclasses", 
+          new StartElementHandlerSection(this,LayoutDocEntry::FileInlineClasses,&LayoutParser::startSectionEntry,
+                                         fortranOpt ? theTranslator->trTypeDocumentation() :
+                                         theTranslator->trClassDocumentation() 
+                                         ));
       m_sHandler.insert("file/memberdef/defines", 
           new StartElementHandlerMember(this,&LayoutParser::startMemberDefEntry,
                                         MemberList::docDefineMembers,theTranslator->trDefineDocumentation()));
@@ -511,10 +526,12 @@ class LayoutParser : public QXmlDefaultHandler
                                         MemberList::docTypedefMembers,theTranslator->trTypedefDocumentation()));
       m_sHandler.insert("file/memberdef/enums", 
           new StartElementHandlerMember(this,&LayoutParser::startMemberDefEntry,
-                                        MemberList::docEnumMembers,theTranslator->trEnumerationTypeDocumentation()));
+                                        MemberList::docEnumMembers,
+                                        theTranslator->trEnumerationTypeDocumentation()));
       m_sHandler.insert("file/memberdef/functions", 
           new StartElementHandlerMember(this,&LayoutParser::startMemberDefEntry,
-                                        MemberList::docFuncMembers,theTranslator->trFunctionDocumentation()));
+                                        MemberList::docFuncMembers,
+                                        fortranOpt ? theTranslator->trSubprogramDocumentation() : theTranslator->trFunctionDocumentation()));
       m_sHandler.insert("file/memberdef/variables", 
           new StartElementHandlerMember(this,&LayoutParser::startMemberDefEntry,
                                         MemberList::docVarMembers,theTranslator->trVariableDocumentation()));

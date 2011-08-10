@@ -1,1 +1,1 @@
-char versionString[]="1.7.4-20110426";
+char versionString[]="1.7.4-20110727";

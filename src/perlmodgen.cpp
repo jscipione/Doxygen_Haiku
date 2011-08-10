@@ -297,6 +297,7 @@ public:
   void visit(DocFormula *);
   void visit(DocIndexEntry *);
   void visit(DocSimpleSectSep *);
+  void visit(DocCite *);
 
   //--------------------------------------
   // visitor functions for compound nodes
@@ -737,6 +738,14 @@ void PerlModDocVisitor::visit(DocSimpleSectSep *)
 {
 }
 
+void PerlModDocVisitor::visit(DocCite *cite)
+{
+  openItem("cite");
+  m_output.addFieldQuotedString("text", cite->text());
+  closeItem();
+}
+
+
 //--------------------------------------
 // visitor functions for compound nodes
 //--------------------------------------
@@ -808,6 +817,7 @@ void PerlModDocVisitor::visitPre(DocSimpleSect *s)
   case DocSimpleSect::Warning:		type = "warning"; break;
   case DocSimpleSect::Pre:		type = "pre"; break;
   case DocSimpleSect::Post:		type = "post"; break;
+  case DocSimpleSect::Copyright:	type = "copyright"; break;
   case DocSimpleSect::Invar:		type = "invariant"; break;
   case DocSimpleSect::Remark:		type = "remark"; break;
   case DocSimpleSect::Attention:	type = "attention"; break;

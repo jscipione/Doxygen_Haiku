@@ -265,7 +265,11 @@ class ClassDef : public Definition
     bool isUsedOnly() const;
 
     QCString anchor() const;
-    bool isEmbeddedInGroupDocs() const;
+    bool isEmbeddedInOuterScope() const;
+
+    SrcLangExt getLanguage() const;
+
+    bool isSimple() const;
 
     //-----------------------------------------------------------------------------------
     // --- setters ----
@@ -286,8 +290,8 @@ class ClassDef : public Definition
     void addInnerCompound(Definition *d);
     ClassDef *insertTemplateInstance(const QCString &fileName,int startLine,
                                 const QCString &templSpec,bool &freshInstance);
-    void addUsedClass(ClassDef *cd,const char *accessName);
-    void addUsedByClass(ClassDef *cd,const char *accessName);
+    void addUsedClass(ClassDef *cd,const char *accessName,Protection prot);
+    void addUsedByClass(ClassDef *cd,const char *accessName,Protection prot);
     void setIsStatic(bool b);
     void setLanguage(SrcLangExt lang);
     void setCompoundType(CompoundType t);
@@ -343,6 +347,7 @@ class ClassDef : public Definition
     void writeMemberDeclarations(OutputList &ol,MemberList::ListType lt,const QCString &title,
                                  const char *subTitle=0,bool showInline=FALSE);
     void writeMemberDocumentation(OutputList &ol,MemberList::ListType lt,const QCString &title,bool showInline=FALSE);
+    void writeSimpleMemberDocumentation(OutputList &ol,MemberList::ListType lt);
     void writePlainMemberDeclaration(OutputList &ol,MemberList::ListType lt,bool inGroup);
     void writeBriefDescription(OutputList &ol,bool exampleFlag);
     void writeDetailedDescription(OutputList &ol,const QCString &pageType,bool exampleFlag,
@@ -353,6 +358,7 @@ class ClassDef : public Definition
     void writeCollaborationGraph(OutputList &ol);
     void writeMemberGroups(OutputList &ol,bool showInline=FALSE);
     void writeNestedClasses(OutputList &ol,const QCString &title);
+    void writeInlineClasses(OutputList &ol);
     void startMemberDeclarations(OutputList &ol);
     void endMemberDeclarations(OutputList &ol);
     void startMemberDocumentation(OutputList &ol);

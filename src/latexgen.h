@@ -38,9 +38,9 @@ class LatexGenerator : public OutputGenerator
     void enable() 
     { if (genStack->top()) active=*genStack->top(); else active=TRUE; }
     void disable() { active=FALSE; }
-    void enableIf(OutputType o)  { if (o==Latex) active=TRUE;  }
-    void disableIf(OutputType o) { if (o==Latex) active=FALSE; }
-    void disableIfNot(OutputType o) { if (o!=Latex) active=FALSE; }
+    void enableIf(OutputType o)  { if (o==Latex) enable();  }
+    void disableIf(OutputType o) { if (o==Latex) disable(); }
+    void disableIfNot(OutputType o) { if (o!=Latex) disable(); }
     bool isEnabled(OutputType o) { return (o==Latex && active); } 
     OutputGenerator *get(OutputType o) { return (o==Latex) ? this : 0; }
 
@@ -108,8 +108,6 @@ class LatexGenerator : public OutputGenerator
     void endMemberDocList() {}
     void startMemberList();
     void endMemberList();
-    void startInlineDescription() {}
-    void endInlineDescription() {}
     void startInlineHeader();
     void endInlineHeader();
     void startAnonTypeScope(int);
@@ -261,6 +259,15 @@ class LatexGenerator : public OutputGenerator
     void startConstraintDocs();
     void endConstraintDocs();
     void endConstraintList();
+
+    void startMemberDocSimple();
+    void endMemberDocSimple();
+    void startInlineMemberType();
+    void endInlineMemberType();
+    void startInlineMemberName();
+    void endInlineMemberName();
+    void startInlineMemberDoc();
+    void endInlineMemberDoc();
 
     void startFontClass(const char *); // {}
     void endFontClass(); // {}

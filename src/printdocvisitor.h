@@ -215,6 +215,15 @@ class PrintDocVisitor : public DocVisitor
       indent_leaf();
       printf("<simplesectsep/>");
     }
+    void visit(DocCite *cite)
+    {
+      indent_leaf();
+      printf("<cite ref=\"%s\" file=\"%s\" "
+             "anchor=\"%s\" text=\"%s\""
+             "/>\n",
+             cite->ref().data(),cite->file().data(),cite->anchor().data(),
+             cite->text().data());
+    }
 
     //--------------------------------------
     
@@ -289,6 +298,7 @@ class PrintDocVisitor : public DocVisitor
 	case DocSimpleSect::Warning: printf("warning"); break;
 	case DocSimpleSect::Pre: printf("pre"); break;
 	case DocSimpleSect::Post: printf("post"); break;
+	case DocSimpleSect::Copyright: printf("copyright"); break;
 	case DocSimpleSect::Invar: printf("invar"); break;
 	case DocSimpleSect::Remark: printf("remark"); break;
 	case DocSimpleSect::Attention: printf("attention"); break;

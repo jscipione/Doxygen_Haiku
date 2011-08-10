@@ -163,6 +163,7 @@ class MemberList : public QList<MemberDef>
                                 const char *scopeName,
                                 Definition *container
                                );
+    void writeSimpleDocumentation(OutputList &ol,Definition *container);
     bool declVisible() const;
     void addMemberGroup(MemberGroup *mg);
     void setInGroup(bool inGroup) { m_inGroup=inGroup; }

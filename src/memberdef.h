@@ -372,6 +372,7 @@ class MemberDef : public Definition
                    Definition *container,
                    bool overloaded
                   );
+    void writeMemberDocSimple(OutputList &ol,Definition *container);
     void writeTemplatePrefixDocumentation(OutputList &ol,ClassDef *cd);
     QCString writeSpecifierDocumentation(OutputList &ol,
                                          ClassDef *cd,
